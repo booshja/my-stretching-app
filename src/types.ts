@@ -4,7 +4,11 @@ export interface Stretch {
     image: string;
 }
 
-export type Transition = Stretch;
+export interface Transition {
+    name: string;
+    description: string;
+    time: number;
+}
 
 export type StretchLength = 60 | 90;
 
@@ -13,4 +17,4 @@ export interface HeatCold {
     time: number;
 }
 
-export type DisplayItem = HeatCold | Stretch;
+export type DisplayItem = HeatCold | Stretch | Transition;
