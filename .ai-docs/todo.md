@@ -1,6 +1,6 @@
 ## Critical and High Issue Checklist
 
--   [ ] Incorrect static image imports from public (use string paths or move assets)
+-   [x] Incorrect static image imports from public (use string paths or move assets)
 -   [ ] Timer stale interval closure (stale state in setInterval)
 -   [ ] Transition type mismatch in getRoutineList and incorrect Transition type
 -   [ ] RoutineItem assumes image for all DisplayItem variants

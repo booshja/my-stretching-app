@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import type { HeatColdRounds } from '../../_utils';
+import type { HeatColdRounds } from '../../../_utils';
 
 interface StartRoutineStepProps {
     rounds: HeatColdRounds;

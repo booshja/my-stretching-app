@@ -5,7 +5,7 @@ import {
     type RoutineOption,
     STRETCH_TIMES,
     type StretchTime,
-} from '../../_utils';
+} from '../../../_utils';
 
 interface LengthStepProps {
     handleStretchTimeChoice: (time: StretchTime) => void;

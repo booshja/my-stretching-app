@@ -1,6 +1,6 @@
 'use client';
 
-import { HEAT_COLD_ROUNDS, type HeatColdRounds } from '../../_utils';
+import { HEAT_COLD_ROUNDS, type HeatColdRounds } from '../../../_utils';
 
 interface RoundsStepProps {
     handleRoundsChoice: (rounds: HeatColdRounds) => void;

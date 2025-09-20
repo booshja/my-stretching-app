@@ -1,6 +1,6 @@
 'use client';
 
-import { ROUTINE_OPTIONS, type RoutineOption } from '../../_utils';
+import { ROUTINE_OPTIONS, type RoutineOption } from '../../../_utils';
 
 interface RoutineStepProps {
     handleRoutineChoice: (routine: RoutineOption) => void;

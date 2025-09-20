@@ -1,9 +1,7 @@
-import type { StaticImageData } from 'next/image';
-
 export interface Stretch {
     name: string;
     description: string;
-    image: StaticImageData;
+    image: string;
 }
 
 export type Transition = Stretch;

@@ -16,10 +16,18 @@ export const RoutineItem = ({ item, next = false }: RoutineItemProps) => {
                 {next && <span className={styles.nextSpan}>Next:</span>}
                 {item.name}
             </h2>
-            {item?.description && (
+            {'description' in item && item.description && (
                 <p className={styles.description}>{item.description}</p>
             )}
-            <Image src={item.image} alt={item.name} className={styles.image} />
+            {'image' in item ? (
+                <Image
+                    src={item.image}
+                    alt={item.name}
+                    className={styles.image}
+                    width={800}
+                    height={600}
+                />
+            ) : null}
         </div>
     );
 };
