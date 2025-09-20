@@ -25,4 +25,13 @@ describe('RoutineItem', () => {
         );
         expect(screen.getByText(/get ready/i)).toBeInTheDocument();
     });
+
+    it('does not render an image tag for non-stretch items without image', () => {
+        render(<RoutineItem item={{ name: 'Heat', time: 60 }} />);
+        const imgs = screen.queryAllByRole('img');
+        expect(
+            imgs.length === 0 ||
+                imgs.every((img) => img.getAttribute('alt') !== 'Heat')
+        ).toBe(true);
+    });
 });

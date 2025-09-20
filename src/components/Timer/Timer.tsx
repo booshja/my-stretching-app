@@ -20,36 +20,31 @@ export const Timer = ({
 }: TimerProps) => {
     const [timeRemaining, setTimeRemaining] = useState<number>(initialTime);
 
+    // Keep timeRemaining in sync if initialTime changes
     useEffect(() => {
-        const timerInterval = setInterval(() => {
-            if (
-                timeRemaining === 6 ||
-                timeRemaining === 5 ||
-                timeRemaining === 4 ||
-                timeRemaining === 3 ||
-                timeRemaining === 2 ||
-                timeRemaining === 1 ||
-                timeRemaining === 0
-            ) {
+        setTimeRemaining(initialTime);
+    }, [initialTime]);
+
+    useEffect(() => {
+        if (timeRemaining === 0) {
+            onTimerComplete();
+            return;
+        }
+
+        const id = setTimeout(() => {
+            const next = timeRemaining - 1;
+            // Beep on last 6 seconds
+            if ([6, 5, 4, 3, 2, 1, 0].includes(next)) {
                 playBeep();
             }
-            setTimeRemaining((prevTime) => {
-                if (prevTime === 0) return 0;
-
-                return prevTime - 1;
-            });
-            if (timeRemaining === 10) onLowTime();
-            if (timeRemaining === 0) {
-                clearInterval(timerInterval);
-                onTimerComplete();
+            if (next === 10) {
+                onLowTime();
             }
+            setTimeRemaining(next >= 0 ? next : 0);
         }, 1000);
 
-        return function cleanup() {
-            clearInterval(timerInterval);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        return () => clearTimeout(id);
+    }, [timeRemaining, onLowTime, onTimerComplete]);
 
     const minutes = Math.floor((timeRemaining % 3600) / 60);
     let seconds: number | string = timeRemaining % 60;

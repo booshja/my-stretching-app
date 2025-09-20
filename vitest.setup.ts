@@ -11,3 +11,7 @@ vi.mock('next/link', () => ({
         children: React.ReactNode;
     }) => createElement('a', { href }, children),
 }));
+
+vi.mock('@/utils/playBeep', () => ({
+    playBeep: vi.fn(),
+}));

@@ -62,7 +62,7 @@ This document captures project structure, data models, conventions, and gotchas 
 
 ### Routine data (src/utils/routines)
 
--   `hockeyStretch.ts` exports `HOCKEY: Stretch[]` with imported static images from `@/assets/images/...`.
+-   `hockeyStretch.ts` exports `HOCKEY: Stretch[]` with public string image paths (e.g., `/images/foo.webp`).
 -   `hockeyHeatCold.ts` exports `HOCKEY_HEAT_COLD: HeatCold[]` with `time` values.
 -   `nighttimeStretch.ts` exports `NIGHTTIME: Stretch[] = []` (placeholder).
 
@@ -70,7 +70,7 @@ This document captures project structure, data models, conventions, and gotchas 
 
 -   `getRoutineList(routine: DisplayItem[])` returns a new list with a 5-second Transition inserted between each item:
     -   Transition item: `{ name: 'Transition', description: 'Get ready for ...', time: 5 }`.
-    -   Note: Transition objects match `HeatCold` shape (they have `time` but no `image`). UI that expects an `image` must guard for transitions.
+    -   Note: `Transition` is a first-class type now; UI must guard for items without `image`.
 
 ### UI components of interest
 
@@ -78,8 +78,8 @@ This document captures project structure, data models, conventions, and gotchas 
     -   Props: `initialTime` (seconds), `onLowTime`, `onTimerComplete`.
     -   Beeps at 6→0 seconds via `playBeep()`.
     -   Important: The current implementation uses a stale `timeRemaining` inside `setInterval` (effect has empty deps), which can prevent `onLowTime` and `onTimerComplete` from firing correctly. See Known issues for a fix pattern.
--   `RoutineItem` expects a `DisplayItem` and renders `Image` via `item.image`.
-    -   When used with Transition or Heat/Cold items, guard for missing `image` or render a different layout.
+-   `RoutineItem` expects a `DisplayItem` and uses `next/image` with string `src`.
+    -   Guards for missing `image` (Heat/Cold or Transition) and only renders an image for stretch items.
 -   `Routine` (legacy, not wired into current routes) combines `RoutineChoiceForm`, `Timer`, and `RoutineItem` to step through a computed list.
 
 ### Stretch form flow (src/app/stretch/\_components/StretchForm)
@@ -125,31 +125,7 @@ This document captures project structure, data models, conventions, and gotchas 
     -   Current: `/stretch?type=${routineChoice}time=${stretchTime}`
     -   Should be: `/stretch?type=${routineChoice}&time=${stretchTime}`
 
--   Timer stale state in interval
-    -   File: `src/components/Timer/Timer.tsx`
-    -   Symptom: `onLowTime`/`onTimerComplete` checks rely on a `timeRemaining` value captured at mount.
-    -   Fix pattern: drive effects off `timeRemaining` or use a one-second tick with functional updates and compute thresholds from the updated value. Example sketch:
-
-```tsx
-useEffect(() => {
-    setTimeRemaining(initialTime);
-}, [initialTime]);
-
-useEffect(() => {
-    if (timeRemaining === 0) {
-        onTimerComplete();
-        return;
-    }
-
-    const id = setTimeout(() => {
-        const next = timeRemaining - 1;
-        if ([6, 5, 4, 3, 2, 1, 0].includes(next)) playBeep();
-        if (next === 10) onLowTime();
-        setTimeRemaining(next);
-    }, 1000);
-    return () => clearTimeout(id);
-}, [timeRemaining, onLowTime, onTimerComplete]);
-```
+-   Timer stale state in interval: fixed by switching to a `setTimeout` loop keyed off `timeRemaining` with low-time and completion callbacks.
 
 -   Transition items vs UI requirements
 
