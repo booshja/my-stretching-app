@@ -12,6 +12,7 @@ import {
 import { RoutineStep } from './StretchFormSteps/RoutineStep/RoutineStep';
 import { LengthStep } from './StretchFormSteps/LengthStep/LengthStep';
 import { StartRoutineStep } from './StretchFormSteps/StartRoutineStep/StartRoutineStep';
+import styles from './StretchForm.module.css';
 
 export const StretchForm = () => {
     const [routineChoice, setRoutineChoice] = useState<RoutineOption>(
@@ -36,7 +37,7 @@ export const StretchForm = () => {
 
     return (
         <>
-            <h1>Stretching</h1>
+            <h1 className={styles.title}>Stretching</h1>
             {formStep === STRETCH_FORM_STEPS.ROUTINE && (
                 <RoutineStep handleRoutineChoice={handleRoutineChoice} />
             )}

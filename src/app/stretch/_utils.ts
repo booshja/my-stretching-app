@@ -12,6 +12,7 @@ export const ROUTINE_STRINGS = {
 } as const;
 
 export const STRETCH_TIMES = {
+    TWENTY_SECONDS: 20,
     ONE_MINUTE: 60,
     ONE_MINUTE_THIRTY_SECONDS: 90,
 } as const;
@@ -19,6 +20,7 @@ export const STRETCH_TIMES = {
 export type StretchTime = (typeof STRETCH_TIMES)[keyof typeof STRETCH_TIMES];
 
 export const STRETCH_TIME_STRINGS = {
+    20: '20 seconds',
     60: '1 minute',
     90: '1 minute 30 seconds',
 } as const;

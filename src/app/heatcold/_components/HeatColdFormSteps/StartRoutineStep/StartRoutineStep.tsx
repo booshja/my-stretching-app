@@ -10,8 +10,13 @@ interface StartRoutineStepProps {
 export const StartRoutineStep = ({ rounds }: StartRoutineStepProps) => {
     return (
         <div>
-            <p>Repeating for {rounds} rounds</p>
-            <Link href={`/heatcold?rounds=${rounds}`}>Let&apos;s go!</Link>
+            <p className="text-center">Repeating for {rounds} rounds</p>
+            <Link
+                href={`/heatcold?rounds=${rounds}`}
+                className="u-button u-mt-lg"
+            >
+                Let&apos;s go!
+            </Link>
         </div>
     );
 };

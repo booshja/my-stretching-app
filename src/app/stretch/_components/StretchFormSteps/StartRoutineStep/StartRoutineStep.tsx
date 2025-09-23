@@ -18,12 +18,17 @@ export const StartRoutineStep = ({
     stretchTime,
 }: StartRoutineStepProps) => {
     return (
-        <div>
+        <div className="u-center-text">
             <h2>{ROUTINE_STRINGS[routineChoice]}</h2>
             <h2>Holding for {STRETCH_TIME_STRINGS[stretchTime]} per stretch</h2>
-            <Link href={`/stretch?type=${routineChoice}&time=${stretchTime}`}>
-                Let&apos;s go!
-            </Link>
+            <div className="u-center-row">
+                <Link
+                    href={`/stretch?type=${routineChoice}&time=${stretchTime}`}
+                    className="u-button u-mt-lg"
+                >
+                    Let&apos;s go!
+                </Link>
+            </div>
         </div>
     );
 };

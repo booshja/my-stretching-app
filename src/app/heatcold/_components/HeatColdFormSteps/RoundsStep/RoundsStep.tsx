@@ -8,28 +8,32 @@ interface RoundsStepProps {
 
 export const RoundsStep = ({ handleRoundsChoice }: RoundsStepProps) => {
     return (
-        <div>
+        <div className="u-center-text">
             <h2>How many rounds would you like to do?</h2>
-            <div>
+            <div className="u-center-row">
                 <button
+                    className="u-button"
                     type="button"
                     onClick={() => handleRoundsChoice(HEAT_COLD_ROUNDS.ONE)}
                 >
                     1
                 </button>
                 <button
+                    className="u-button"
                     type="button"
                     onClick={() => handleRoundsChoice(HEAT_COLD_ROUNDS.TWO)}
                 >
                     2
                 </button>
                 <button
+                    className="u-button"
                     type="button"
                     onClick={() => handleRoundsChoice(HEAT_COLD_ROUNDS.THREE)}
                 >
                     3
                 </button>
                 <button
+                    className="u-button"
                     type="button"
                     onClick={() => handleRoundsChoice(HEAT_COLD_ROUNDS.FOUR)}
                 >

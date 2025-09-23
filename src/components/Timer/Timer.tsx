@@ -8,6 +8,7 @@ interface TimerProps {
     initialTime: number; // in seconds
     onLowTime: () => void;
     onTimerComplete: () => void;
+    isPaused?: boolean;
 }
 
 /** Based on the CountdownTimer from this Medium article:
@@ -17,6 +18,7 @@ export const Timer = ({
     initialTime,
     onLowTime,
     onTimerComplete,
+    isPaused = false,
 }: TimerProps) => {
     const [timeRemaining, setTimeRemaining] = useState<number>(initialTime);
 
@@ -26,6 +28,9 @@ export const Timer = ({
     }, [initialTime]);
 
     useEffect(() => {
+        if (isPaused) {
+            return;
+        }
         if (timeRemaining === 0) {
             onTimerComplete();
             return;
@@ -33,8 +38,8 @@ export const Timer = ({
 
         const id = setTimeout(() => {
             const next = timeRemaining - 1;
-            // Beep on last 6 seconds
-            if ([6, 5, 4, 3, 2, 1, 0].includes(next)) {
+            // Beep on last 5 seconds
+            if ([5, 4, 3, 2, 1, 0].includes(next)) {
                 playBeep();
             }
             if (next === 10) {
@@ -44,7 +49,7 @@ export const Timer = ({
         }, 1000);
 
         return () => clearTimeout(id);
-    }, [timeRemaining, onLowTime, onTimerComplete]);
+    }, [timeRemaining, isPaused, onLowTime, onTimerComplete]);
 
     const minutes = Math.floor((timeRemaining % 3600) / 60);
     let seconds: number | string = timeRemaining % 60;
