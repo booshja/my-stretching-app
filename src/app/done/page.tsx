@@ -3,13 +3,14 @@
 import { checkUrlParams } from '@/utils/checkUrlParams';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
 const ROUTE_PARAMS = {
     HEAT_COLD: 'heatcold',
     STRETCH: 'stretch',
 } as const;
 
-export default function AllDone() {
+function AllDoneContent() {
     const params = useSearchParams();
 
     const allowedParams = {
@@ -34,5 +35,13 @@ export default function AllDone() {
                 </>
             )}
         </div>
+    );
+}
+
+export default function AllDone() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <AllDoneContent />
+        </Suspense>
     );
 }

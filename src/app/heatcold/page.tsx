@@ -4,9 +4,10 @@ import { useSearchParams } from 'next/navigation';
 import { HeatColdForm } from './_components/HeatColdForm';
 import { HeatColdRunner } from './_components/HeatColdRunner';
 import { checkUrlParams } from '@/utils/checkUrlParams';
+import { Suspense } from 'react';
 // using global utility classes from globals.css
 
-export default function HeatCold() {
+function HeatColdContent() {
     const params = useSearchParams();
     const rounds = params.get('rounds');
 
@@ -41,4 +42,12 @@ export default function HeatCold() {
             </div>
         );
     }
+}
+
+export default function HeatCold() {
+    return (
+        <Suspense fallback={<div className="u-page">Loading...</div>}>
+            <HeatColdContent />
+        </Suspense>
+    );
 }

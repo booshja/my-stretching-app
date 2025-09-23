@@ -5,9 +5,10 @@ import { checkUrlParams } from '@/utils/checkUrlParams';
 import { StretchForm } from './_components/StretchForm';
 import { StretchRunner } from './_components/StretchRunner';
 import type { StretchLength } from '@/types';
+import { Suspense } from 'react';
 // using global utility classes from globals.css
 
-export default function Stretch() {
+function StretchContent() {
     const params = useSearchParams();
     const type = params.get('type');
     const time = params.get('time');
@@ -49,4 +50,12 @@ export default function Stretch() {
             </div>
         );
     }
+}
+
+export default function Stretch() {
+    return (
+        <Suspense fallback={<div className="u-page">Loading...</div>}>
+            <StretchContent />
+        </Suspense>
+    );
 }
