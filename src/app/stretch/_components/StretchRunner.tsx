@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getRoutineList } from '@/utils/getRoutineList';
 import { HOCKEY } from '@/utils/routines';
-import type { DisplayItem, StretchLength } from '@/types';
+import type { DisplayItem, StretchLength, Transition } from '@/types';
 import { Timer } from '@/components/Timer';
 import { RoutineItem } from '@/components/RoutineItem';
 import styles from '../Stretch.module.css';
@@ -91,7 +91,42 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
     }, [router, handleSkip]);
 
     const currentItem = routineWithTransitions[currentIndex] ?? null;
-    const nextItem = routineWithTransitions[currentIndex + 2] ?? null;
+    // Type guard to identify Transition items
+    const isTransitionItem = (item: DisplayItem | null): item is Transition => {
+        return (
+            item !== null &&
+            'time' in item &&
+            'description' in item &&
+            item.name === 'Transition'
+        );
+    };
+    // During a Transition step (no image), show the upcoming stretch's image
+    const isTransitionStep = isTransitionItem(currentItem);
+    const nextAfterCurrent = routineWithTransitions[currentIndex + 1] ?? null;
+    const displayedCurrentItem =
+        isTransitionStep && nextAfterCurrent && 'image' in nextAfterCurrent
+            ? {
+                  name: currentItem.name,
+                  description: currentItem.description,
+                  image: nextAfterCurrent.image,
+              }
+            : currentItem;
+
+    // For the preview, skip over any Transition items to always show a stretch
+    const computePreviewItem = () => {
+        if (!showNext) return null;
+        let previewIndex = currentIndex + 1;
+        const candidate = routineWithTransitions[previewIndex] ?? null;
+        const candidateIsTransition =
+            candidate !== null &&
+            'time' in candidate &&
+            candidate.name === 'Transition';
+        if (candidateIsTransition) {
+            previewIndex += 1;
+        }
+        return routineWithTransitions[previewIndex] ?? null;
+    };
+    const nextItem = computePreviewItem();
     const currentInitialTime =
         currentItem && 'time' in currentItem ? currentItem.time : time;
 
@@ -136,7 +171,7 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
                     height: 'calc(100vh - 140px)',
                 }}
             >
-                <RoutineItem item={currentItem} />
+                <RoutineItem item={displayedCurrentItem} />
                 {showNext && <RoutineItem item={nextItem} next />}
             </div>
         </div>

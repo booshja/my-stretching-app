@@ -1,6 +1,6 @@
 .nav {
     position: fixed;
-    top: 0;
+    top: env(safe-area-inset-top);
     left: 0;
     right: 0;
     padding: 8px 12px;

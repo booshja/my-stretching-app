@@ -12,7 +12,7 @@ import { HOCKEY, HOCKEY_HEAT_COLD, NIGHTTIME } from '@/utils/routines';
 import { RoutineChoiceForm } from '../RoutineChoiceForm';
 import { RoutineItem } from '../RoutineItem';
 import { Timer } from '../Timer';
-import type { DisplayItem } from '@/types';
+import type { DisplayItem, Transition } from '@/types';
 import styles from './Routine.module.css';
 
 export const Routine = () => {
@@ -98,13 +98,59 @@ export const Routine = () => {
                             onLowTime={handleLowTime}
                             onTimerComplete={handleTimerFinish}
                         />
-                        <RoutineItem item={currentRoutine[currentItemIndex]} />
-                        {showNext && (
-                            <RoutineItem
-                                item={currentRoutine[currentItemIndex + 2]}
-                                next
-                            />
-                        )}
+                        {(() => {
+                            const currentItem =
+                                currentRoutine[currentItemIndex] ?? null;
+                            const isTransitionItem = (
+                                item: DisplayItem | null
+                            ): item is Transition => {
+                                return (
+                                    item !== null &&
+                                    'time' in item &&
+                                    'description' in item &&
+                                    item.name === 'Transition'
+                                );
+                            };
+                            const isTransitionStep =
+                                isTransitionItem(currentItem);
+                            const nextAfterCurrent =
+                                currentRoutine[currentItemIndex + 1] ?? null;
+                            const displayedCurrentItem =
+                                isTransitionStep &&
+                                nextAfterCurrent &&
+                                'image' in nextAfterCurrent
+                                    ? {
+                                          name: currentItem.name,
+                                          description: currentItem.description,
+                                          image: nextAfterCurrent.image,
+                                      }
+                                    : currentItem;
+
+                            const computePreviewItem = () => {
+                                if (!showNext) return null;
+                                let previewIndex = currentItemIndex + 1;
+                                const candidate =
+                                    currentRoutine[previewIndex] ?? null;
+                                const candidateIsTransition =
+                                    candidate !== null &&
+                                    'time' in candidate &&
+                                    candidate.name === 'Transition';
+                                if (candidateIsTransition) {
+                                    previewIndex += 1;
+                                }
+                                return currentRoutine[previewIndex] ?? null;
+                            };
+                            const nextItem = computePreviewItem();
+
+                            return (
+                                <>
+                                    <RoutineItem item={displayedCurrentItem} />
+                                    {showNext && (
+                                        <RoutineItem item={nextItem} next />
+                                    )}
+                                </>
+                            );
+                        })()}
                     </>
                 )
             )}

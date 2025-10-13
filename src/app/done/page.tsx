@@ -4,35 +4,58 @@ import { checkUrlParams } from '@/utils/checkUrlParams';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import styles from '../LandingPage.module.css';
 
 const ROUTE_PARAMS = {
     HEAT_COLD: 'heatcold',
     STRETCH: 'stretch',
+    PRE_GAME: 'pregame',
 } as const;
 
 function AllDoneContent() {
     const params = useSearchParams();
 
     const allowedParams = {
-        type: [ROUTE_PARAMS.HEAT_COLD, ROUTE_PARAMS.STRETCH],
+        type: [
+            ROUTE_PARAMS.HEAT_COLD,
+            ROUTE_PARAMS.STRETCH,
+            ROUTE_PARAMS.PRE_GAME,
+        ],
     };
 
     const { type } = checkUrlParams({ allowedParams, params });
 
     return (
-        <div>
-            <h1>That&apos;s it! Great work!</h1>
+        <div className={styles.landingPage}>
+            <h1 className={`${styles.title} text-center`}>
+                That&apos;s it! Great work!
+            </h1>
             {type === ROUTE_PARAMS.HEAT_COLD && (
-                <Link href="/">Do another routine</Link>
+                <Link href="/" className={styles.link}>
+                    Do another routine
+                </Link>
             )}
             {type === ROUTE_PARAMS.STRETCH && (
                 <>
-                    <p>Would you like to do a heat/cold therapy session now?</p>
+                    <p className={styles.description}>
+                        Would you like to do a heat/cold therapy session now?
+                    </p>
                     <div>
-                        <Link href="/heatcold">Yes</Link>
-                        <Link href="/">No</Link>
+                        <Link href="/heatcold" className={styles.link}>
+                            Yes
+                        </Link>
+                        <Link href="/" className={styles.link}>
+                            No
+                        </Link>
                     </div>
                 </>
+            )}
+            {type === ROUTE_PARAMS.PRE_GAME && (
+                <div>
+                    <Link href="/" className={styles.link}>
+                        Do another routine
+                    </Link>
+                </div>
             )}
         </div>
     );

@@ -15,6 +15,9 @@ export default function LandingPage() {
                 <Link href="/heatcold" className={styles.link}>
                     Heat/Cold Therapy
                 </Link>
+                <Link href="/pregame" className={styles.link}>
+                    Pre-Game Warmup
+                </Link>
             </div>
         </div>
     );

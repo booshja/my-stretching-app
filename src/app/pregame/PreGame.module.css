@@ -1,0 +1,27 @@
+.container {
+    position: relative;
+}
+
+.title {
+    margin: 0 0 8px 0;
+}
+
+.description {
+    margin: 0 0 12px 0;
+}
+
+.image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+@supports (height: 100dvh) {
+    .container {
+        min-height: calc(100dvh - 140px);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
