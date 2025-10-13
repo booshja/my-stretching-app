@@ -1,5 +1,6 @@
 .container {
     position: relative;
+    padding-top: calc(64px + env(safe-area-inset-top) + 44px);
 }
 
 .title {

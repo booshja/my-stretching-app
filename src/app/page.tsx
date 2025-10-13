@@ -8,7 +8,7 @@ export default function LandingPage() {
                 Welcome to My Stretching App!
             </h1>
             <p className={styles.description}>What would you like to do?</p>
-            <div>
+            <div className={styles.links}>
                 <Link href="/stretch" className={styles.link}>
                     Stretching
                 </Link>

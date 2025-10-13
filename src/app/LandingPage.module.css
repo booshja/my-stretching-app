@@ -4,37 +4,53 @@
     align-items: center;
     justify-content: center;
     gap: 1rem;
-    height: 100dvh;
+    min-height: 100dvh;
     width: 100%;
     background-color: #282c34;
     color: rgb(210, 210, 210);
+    padding: calc(64px + env(safe-area-inset-top)) 16px
+        env(safe-area-inset-bottom);
 }
 
 .title {
-    font-size: 4rem;
+    font-size: clamp(2rem, 6vw, 3rem);
     font-weight: bold;
 }
 
 .description {
-    font-size: 2rem;
+    font-size: clamp(1rem, 4.5vw, 1.5rem);
     font-weight: 400;
     margin-bottom: 1rem;
+}
+
+.links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    align-items: center;
 }
 
 .link {
     color: rgb(210, 210, 210);
     text-decoration: none;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: bold;
-    margin: 1rem;
-    padding: 1rem;
+    padding: 14px 16px;
     border-radius: 0.5rem;
     background-color: #282c34;
     border: 1px solid rgb(210, 210, 210);
     transition: all 0.3s ease;
+    display: block;
+    width: min(100%, 22rem);
+    text-align: center;
 }
 
 .link:hover {
     background-color: rgb(210, 210, 210);
     color: #282c34;
+}
+
+.link:active {
+    transform: translateY(1px);
 }

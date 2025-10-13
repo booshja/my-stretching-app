@@ -8,6 +8,7 @@ import type { DisplayItem } from '@/types';
 import { Timer } from '@/components/Timer';
 import { RoutineItem } from '@/components/RoutineItem';
 import styles from '../HeatCold.module.css';
+import { enableWakeLock, disableWakeLock } from '@/utils/wakeLock';
 
 interface HeatColdRunnerProps {
     rounds: number;
@@ -34,8 +35,12 @@ export const HeatColdRunner = ({ rounds }: HeatColdRunnerProps) => {
     const [isPaused, setIsPaused] = useState<boolean>(false);
 
     useEffect(() => {
+        void enableWakeLock();
         setCurrentIndex(0);
         setShowNext(false);
+        return () => {
+            void disableWakeLock();
+        };
     }, [rounds]);
 
     const handleLowTime = () => {

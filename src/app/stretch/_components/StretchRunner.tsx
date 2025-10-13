@@ -8,6 +8,7 @@ import type { DisplayItem, StretchLength, Transition } from '@/types';
 import { Timer } from '@/components/Timer';
 import { RoutineItem } from '@/components/RoutineItem';
 import styles from '../Stretch.module.css';
+import { enableWakeLock, disableWakeLock } from '@/utils/wakeLock';
 
 interface StretchRunnerProps {
     type: 'hockey' | 'daily';
@@ -36,8 +37,12 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
     const [isPaused, setIsPaused] = useState<boolean>(false);
 
     useEffect(() => {
+        void enableWakeLock();
         setCurrentIndex(0);
         setShowNext(false);
+        return () => {
+            void disableWakeLock();
+        };
     }, [type]);
 
     const handleLowTime = () => {

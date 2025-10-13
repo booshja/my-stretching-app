@@ -4,6 +4,7 @@ import { Suspense, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Timer } from '@/components/Timer';
 import { PreGameRunner } from './_components/PreGameRunner';
+import { initBeep } from '@/utils/playBeep';
 import styles from '../LandingPage.module.css';
 
 function PreGameContent() {
@@ -30,7 +31,10 @@ function PreGameContent() {
                 <button
                     className={styles.link}
                     type="button"
-                    onClick={() => setStarted(true)}
+                    onClick={() => {
+                        initBeep();
+                        setStarted(true);
+                    }}
                 >
                     Start
                 </button>

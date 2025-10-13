@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Timer } from '@/components/Timer';
 import { PRE_GAME_WARMUP, type WarmupItem } from '@/utils/routines';
 import styles from '../PreGame.module.css';
+import { enableWakeLock, disableWakeLock } from '@/utils/wakeLock';
 
 export const PreGameRunner = () => {
     const router = useRouter();
@@ -93,6 +94,8 @@ export const PreGameRunner = () => {
     }, [currentIndex, routine, router, startTransitionTo]);
 
     useEffect(() => {
+        // Try to enable wake lock when runner mounts
+        void enableWakeLock();
         const onKeyDown = (e: KeyboardEvent) => {
             if (e.code === 'Space') {
                 if (isTimed) {
@@ -108,7 +111,10 @@ export const PreGameRunner = () => {
             }
         };
         window.addEventListener('keydown', onKeyDown);
-        return () => window.removeEventListener('keydown', onKeyDown);
+        return () => {
+            window.removeEventListener('keydown', onKeyDown);
+            void disableWakeLock();
+        };
     }, [goHome, goNext, isTimed]);
 
     if (!routine.length) {
