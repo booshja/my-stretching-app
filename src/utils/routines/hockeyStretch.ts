@@ -12,12 +12,12 @@ export const HOCKEY: Stretch[] = [
         image: '/images/standing-calf-stretch.webp',
     },
     {
-        name: 'Lateral Adductor Stretch - LEFT',
+        name: 'Standing Groin Stretch - LEFT',
         description: 'Lateral lunge stretching the groin',
         image: '/images/standing-lateral-groin-stretch.png',
     },
     {
-        name: 'Lateral Adductor Stretch - RIGHT',
+        name: 'Standing Groin Stretch - RIGHT',
         description: 'Lateral lunge stretching the groin',
         image: '/images/standing-lateral-groin-stretch.png',
     },
@@ -51,14 +51,33 @@ export const HOCKEY: Stretch[] = [
         image: '/images/standing-leg-crossed-hamstrings-stretch.jpeg',
     },
     {
+        name: 'Standing Wide Leg Hamstring Stretch - CENTER',
+        description: 'Standing wide leg hamstring stretch toward the center',
+        image: '/images/hamstring-wide.jpg',
+    },
+    {
+        name: 'Standing Wide Leg Hamstring Stretch - RIGHT',
+        description:
+            'Standing wide leg hamstring stretch toward the right foot',
+        image: '/images/hamstring-wide-stretch-side.png',
+    },
+    {
+        name: 'Standing Wide Leg Hamstring Stretch - LEFT',
+        description: 'Standing wide leg hamstring stretch toward the left foot',
+        image: '/images/hamstring-wide-stretch-side.png',
+        pauseForNext: true,
+    },
+    {
         name: 'Quad Stretch - LEFT',
         description: 'Standing quad stretch',
         image: '/images/standing-quad-stretch.jpeg',
+        pauseForNext: true,
     },
     {
         name: 'Quad Stretch - RIGHT',
         description: 'Standing quad stretch',
         image: '/images/standing-quad-stretch.jpeg',
+        pauseForNext: true,
     },
     {
         name: 'Hip Flexor Stretch - LEFT',
@@ -79,11 +98,13 @@ export const HOCKEY: Stretch[] = [
         name: 'Calf Stretch - RIGHT',
         description: 'Standing calf stretch',
         image: '/images/standing-calf-stretch.webp',
+        pauseForNext: true,
     },
     {
         name: 'Seated piriformus stretch - RIGHT',
         description: 'Sitting in a chair with right ankle on left knee',
         image: '/images/seated-piriformis-stretch.webp',
+        pauseForNext: true,
     },
     {
         name: 'Seated piriformus stretch - LEFT',
@@ -101,6 +122,12 @@ export const HOCKEY: Stretch[] = [
         description:
             'Sitting in a chair, leaning over to the right, with your hands toward your right ankle',
         image: '/images/seated-lower-back-stretch.jpeg',
+        pauseForNext: true,
+    },
+    {
+        name: 'Seated butterfly stretch',
+        description: 'Sitting on the floor, feet together, knees out',
+        image: '/images/seated-butterfly-stretch.jpeg',
     },
     {
         name: 'Laying glutes stretch - LEFT',
@@ -113,11 +140,7 @@ export const HOCKEY: Stretch[] = [
         description:
             'Sitting on the floor with right leg crossed over left, pulling your knee across',
         image: '/images/laying-glute-stretch.jpg',
-    },
-    {
-        name: 'Seated butterfly stretch',
-        description: 'Sitting on the floor, feet together, knees out',
-        image: '/images/seated-butterfly-stretch.jpeg',
+        pauseForNext: true,
     },
     {
         name: 'Shoulder stretch - LEFT',

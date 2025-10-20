@@ -6,16 +6,45 @@ import {
     STRETCH_TIMES,
     type StretchTime,
 } from '../../../_utils';
+import { HOCKEY } from '@/utils/routines/hockeyStretch';
+import {
+    TRANSITION_SECONDS,
+    formatDurationPhrase,
+    totalStretchSeconds,
+} from '@/utils/time';
 
 interface LengthStepProps {
     handleStretchTimeChoice: (time: StretchTime) => void;
     routineChoice: RoutineOption;
+    onBack?: () => void;
 }
 
 export const LengthStep = ({
     handleStretchTimeChoice,
     routineChoice,
+    onBack,
 }: LengthStepProps) => {
+    const base = routineChoice === 'hockey' ? HOCKEY : [];
+    const numItems = base.length;
+
+    if (numItems === 0) {
+        return (
+            <div className="u-center-text">
+                <p>No stretches found.</p>
+                {onBack && (
+                    <button className="u-button" type="button" onClick={onBack}>
+                        Back
+                    </button>
+                )}
+            </div>
+        );
+    }
+
+    const totalLabel = (secondsPerStretch: number) =>
+        formatDurationPhrase(
+            totalStretchSeconds(numItems, secondsPerStretch, TRANSITION_SECONDS)
+        );
+
     return (
         <div>
             <h2 className="text-center">
@@ -32,8 +61,9 @@ export const LengthStep = ({
                                 STRETCH_TIMES.TWENTY_SECONDS
                             )
                         }
+                        aria-label={`20 seconds, about ${totalLabel(20)} total`}
                     >
-                        20 seconds (test)
+                        20 seconds (test) ({totalLabel(20)} total)
                     </button>
                 )}
                 <button
@@ -42,8 +72,9 @@ export const LengthStep = ({
                     onClick={() =>
                         handleStretchTimeChoice(STRETCH_TIMES.ONE_MINUTE)
                     }
+                    aria-label={`1 minute, about ${totalLabel(60)} total`}
                 >
-                    1 minute
+                    1 minute ({totalLabel(60)} total)
                 </button>
                 <button
                     className="u-button"
@@ -53,8 +84,11 @@ export const LengthStep = ({
                             STRETCH_TIMES.ONE_MINUTE_THIRTY_SECONDS
                         )
                     }
+                    aria-label={`1 minute 30 seconds, about ${totalLabel(
+                        90
+                    )} total`}
                 >
-                    1 minute 30 seconds
+                    1 minute 30 seconds ({totalLabel(90)} total)
                 </button>
             </div>
         </div>

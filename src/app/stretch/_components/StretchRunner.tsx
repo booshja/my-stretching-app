@@ -3,10 +3,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getRoutineList } from '@/utils/getRoutineList';
-import { HOCKEY } from '@/utils/routines';
+import { HOCKEY } from '@/utils/routines/hockeyStretch';
 import type { DisplayItem, StretchLength, Transition } from '@/types';
-import { Timer } from '@/components/Timer';
-import { RoutineItem } from '@/components/RoutineItem';
+import { shouldPauseTransition } from './shouldPauseTransition';
+import { Timer } from '@/components/Timer/Timer';
+import { RoutineItem } from '@/components/RoutineItem/RoutineItem';
 import styles from '../Stretch.module.css';
 import { enableWakeLock, disableWakeLock } from '@/utils/wakeLock';
 
@@ -35,6 +36,9 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
     const [currentIndex, setCurrentIndex] = useState<number>(0);
     const [showNext, setShowNext] = useState<boolean>(false);
     const [isPaused, setIsPaused] = useState<boolean>(false);
+    // Tracks whether the user has started the countdown for a manual transition
+    const [manualTransitionStarted, setManualTransitionStarted] =
+        useState<boolean>(false);
 
     useEffect(() => {
         void enableWakeLock();
@@ -78,8 +82,34 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
         });
     }, [router, routineWithTransitions]);
 
+    // Kick off manual transition (start the 5s countdown)
+    const startManualTransition = useCallback(() => {
+        setManualTransitionStarted(true);
+        setIsPaused(false);
+    }, []);
+
     useEffect(() => {
         const onKeyDown = (e: KeyboardEvent) => {
+            const prev = routineWithTransitions[currentIndex - 1] ?? null;
+            const prevHadPause = !!(
+                prev &&
+                'image' in prev &&
+                (prev as unknown as { pauseForNext?: boolean }).pauseForNext
+            );
+            const isManualTransitionKeyHandler =
+                isTransitionItem(
+                    routineWithTransitions[currentIndex] ?? null
+                ) &&
+                prevHadPause &&
+                !manualTransitionStarted;
+            if (
+                isManualTransitionKeyHandler &&
+                (e.code === 'ArrowRight' || e.code === 'Space')
+            ) {
+                e.preventDefault();
+                startManualTransition();
+                return;
+            }
             if (e.code === 'Space') {
                 e.preventDefault();
                 setIsPaused((p) => !p);
@@ -93,7 +123,14 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
         };
         window.addEventListener('keydown', onKeyDown);
         return () => window.removeEventListener('keydown', onKeyDown);
-    }, [router, handleSkip]);
+    }, [
+        router,
+        handleSkip,
+        currentIndex,
+        routineWithTransitions,
+        manualTransitionStarted,
+        startManualTransition,
+    ]);
 
     const currentItem = routineWithTransitions[currentIndex] ?? null;
     // Type guard to identify Transition items
@@ -135,6 +172,15 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
     const currentInitialTime =
         currentItem && 'time' in currentItem ? currentItem.time : time;
 
+    // Determine whether this is a manual transition step (Transition preceded by a pauseForNext stretch)
+    const prevItem = routineWithTransitions[currentIndex - 1] ?? null;
+    const isManualTransitionStep = shouldPauseTransition(prevItem, currentItem);
+
+    // Reset manual transition started flag when the current index changes
+    useEffect(() => {
+        setManualTransitionStarted(false);
+    }, [currentIndex]);
+
     if (!routineWithTransitions.length) {
         return <p>No stretches found for this routine.</p>;
     }
@@ -146,13 +192,31 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
                 <button
                     className="u-action"
                     type="button"
-                    onClick={() => setIsPaused((p) => !p)}
+                    onClick={() =>
+                        isManualTransitionStep && !manualTransitionStarted
+                            ? startManualTransition()
+                            : setIsPaused((p) => !p)
+                    }
                 >
                     {isPaused ? 'Resume' : 'Pause'}
                 </button>
-                <button className="u-action" type="button" onClick={handleSkip}>
-                    Skip
-                </button>
+                {isManualTransitionStep && !manualTransitionStarted ? (
+                    <button
+                        className="u-action"
+                        type="button"
+                        onClick={startManualTransition}
+                    >
+                        Next
+                    </button>
+                ) : (
+                    <button
+                        className="u-action"
+                        type="button"
+                        onClick={handleSkip}
+                    >
+                        Skip
+                    </button>
+                )}
                 <button
                     className="u-action"
                     type="button"
@@ -166,7 +230,10 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
                 initialTime={currentInitialTime}
                 onLowTime={handleLowTime}
                 onTimerComplete={handleTimerComplete}
-                isPaused={isPaused}
+                isPaused={
+                    isPaused ||
+                    (isManualTransitionStep && !manualTransitionStarted)
+                }
             />
             <div
                 style={{

@@ -45,6 +45,7 @@ export const StretchForm = () => {
                 <LengthStep
                     handleStretchTimeChoice={handleStretchTimeChoice}
                     routineChoice={routineChoice}
+                    onBack={() => setFormStep(STRETCH_FORM_STEPS.ROUTINE)}
                 />
             )}
             {formStep === STRETCH_FORM_STEPS.START && (

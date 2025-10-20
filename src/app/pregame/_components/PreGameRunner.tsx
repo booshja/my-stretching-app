@@ -3,8 +3,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Timer } from '@/components/Timer';
-import { PRE_GAME_WARMUP, type WarmupItem } from '@/utils/routines';
+import { Timer } from '@/components/Timer/Timer';
+import {
+    PRE_GAME_WARMUP,
+    type WarmupItem,
+} from '@/utils/routines/preGameWarmup';
 import styles from '../PreGame.module.css';
 import { enableWakeLock, disableWakeLock } from '@/utils/wakeLock';
 

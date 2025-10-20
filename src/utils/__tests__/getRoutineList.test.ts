@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getRoutineList } from '../getRoutineList';
+import { TRANSITION_SECONDS } from '../time';
 import type { DisplayItem } from '@/types';
 
 describe('getRoutineList', () => {
@@ -10,6 +11,9 @@ describe('getRoutineList', () => {
         ];
         const result = getRoutineList(routine);
         expect(result).toHaveLength(3);
-        expect(result[1]).toMatchObject({ name: 'Transition', time: 5 });
+        expect(result[1]).toMatchObject({
+            name: 'Transition',
+            time: TRANSITION_SECONDS,
+        });
     });
 });

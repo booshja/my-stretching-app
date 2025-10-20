@@ -38,7 +38,7 @@ export const Timer = ({
 
         const id = setTimeout(() => {
             const next = timeRemaining - 1;
-            if ([10, 5, 2, 1, 0].includes(next)) {
+            if ([10, 5, 4, 3, 2, 1].includes(next)) {
                 playBeep();
             }
             if (next === 10) {

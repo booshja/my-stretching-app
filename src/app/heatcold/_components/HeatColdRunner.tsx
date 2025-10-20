@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getRoutineList } from '@/utils/getRoutineList';
-import { HOCKEY_HEAT_COLD } from '@/utils/routines';
+import { HOCKEY_HEAT_COLD } from '@/utils/routines/hockeyHeatCold';
 import type { DisplayItem } from '@/types';
-import { Timer } from '@/components/Timer';
-import { RoutineItem } from '@/components/RoutineItem';
+import { Timer } from '@/components/Timer/Timer';
+import { RoutineItem } from '@/components/RoutineItem/RoutineItem';
 import styles from '../HeatCold.module.css';
 import { enableWakeLock, disableWakeLock } from '@/utils/wakeLock';
 

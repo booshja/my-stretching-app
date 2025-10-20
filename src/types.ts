@@ -2,6 +2,8 @@ export interface Stretch {
     name: string;
     description: string;
     image: string;
+    // When true, the following Transition should wait for user input before starting
+    pauseForNext?: boolean;
 }
 
 export interface Transition {

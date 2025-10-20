@@ -8,10 +8,12 @@ import {
     type RoutineChoice,
     type TimeChoice,
 } from '@/utils/constants';
-import { HOCKEY, HOCKEY_HEAT_COLD, NIGHTTIME } from '@/utils/routines';
-import { RoutineChoiceForm } from '../RoutineChoiceForm';
-import { RoutineItem } from '../RoutineItem';
-import { Timer } from '../Timer';
+import { HOCKEY_HEAT_COLD } from '@/utils/routines/hockeyHeatCold';
+import { HOCKEY } from '@/utils/routines/hockeyStretch';
+import { NIGHTTIME } from '@/utils/routines/nighttimeStretch';
+import { RoutineChoiceForm } from '../RoutineChoiceForm/RoutineChoiceForm';
+import { RoutineItem } from '../RoutineItem/RoutineItem';
+import { Timer } from '../Timer/Timer';
 import type { DisplayItem, Transition } from '@/types';
 import styles from './Routine.module.css';
 

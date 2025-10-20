@@ -1,4 +1,5 @@
 import type { DisplayItem } from '@/types';
+import { TRANSITION_SECONDS } from './time';
 
 export const getRoutineList = (routine: DisplayItem[]) => {
     const routineWithTransitions: DisplayItem[] = [];
@@ -9,7 +10,7 @@ export const getRoutineList = (routine: DisplayItem[]) => {
             routineWithTransitions.push({
                 name: 'Transition',
                 description: `Get ready for ${routine[index + 1].name}`,
-                time: 5,
+                time: TRANSITION_SECONDS,
             });
         }
     });

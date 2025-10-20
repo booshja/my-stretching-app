@@ -2,7 +2,7 @@
 
 import { Suspense, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Timer } from '@/components/Timer';
+import { Timer } from '@/components/Timer/Timer';
 import { PreGameRunner } from './_components/PreGameRunner';
 import { initBeep } from '@/utils/playBeep';
 import styles from '../LandingPage.module.css';
