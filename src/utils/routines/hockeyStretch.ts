@@ -90,17 +90,6 @@ export const HOCKEY: Stretch[] = [
         image: '/images/hip-flexor.jpg',
     },
     {
-        name: 'Calf Stretch - LEFT',
-        description: 'Standing calf stretch',
-        image: '/images/standing-calf-stretch.webp',
-    },
-    {
-        name: 'Calf Stretch - RIGHT',
-        description: 'Standing calf stretch',
-        image: '/images/standing-calf-stretch.webp',
-        pauseForNext: true,
-    },
-    {
         name: 'Seated piriformus stretch - RIGHT',
         description: 'Sitting in a chair with right ankle on left knee',
         image: '/images/seated-piriformis-stretch.webp',
