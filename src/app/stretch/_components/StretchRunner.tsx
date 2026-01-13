@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getRoutineList } from '@/utils/getRoutineList';
 import { HOCKEY } from '@/utils/routines/hockeyStretch';
+import { NECK_STRETCHES } from '@/utils/routines/neckStretches';
 import type { DisplayItem, StretchLength, Transition } from '@/types';
 import { shouldPauseTransition } from './shouldPauseTransition';
 import { Timer } from '@/components/Timer/Timer';
@@ -12,16 +13,19 @@ import styles from '../Stretch.module.css';
 import { enableWakeLock, disableWakeLock } from '@/utils/wakeLock';
 
 interface StretchRunnerProps {
-    type: 'hockey' | 'daily';
+    type: 'hockey' | 'daily' | 'neck';
     time: StretchLength; // seconds
 }
 
 export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
     const router = useRouter();
+    const PRESTART_SECONDS = 10;
     const baseRoutine: DisplayItem[] = useMemo(() => {
         switch (type) {
             case 'hockey':
                 return HOCKEY;
+            case 'neck':
+                return NECK_STRETCHES;
             case 'daily':
             default:
                 return [];
@@ -36,6 +40,7 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
     const [currentIndex, setCurrentIndex] = useState<number>(0);
     const [showNext, setShowNext] = useState<boolean>(false);
     const [isPaused, setIsPaused] = useState<boolean>(false);
+    const [phase, setPhase] = useState<'prestart' | 'running'>('prestart');
     // Tracks whether the user has started the countdown for a manual transition
     const [manualTransitionStarted, setManualTransitionStarted] =
         useState<boolean>(false);
@@ -44,6 +49,8 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
         void enableWakeLock();
         setCurrentIndex(0);
         setShowNext(false);
+        setIsPaused(false);
+        setPhase('prestart');
         return () => {
             void disableWakeLock();
         };
@@ -88,8 +95,27 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
         setIsPaused(false);
     }, []);
 
+    const startNow = useCallback(() => {
+        setIsPaused(false);
+        setShowNext(false);
+        setPhase('running');
+    }, []);
+
     useEffect(() => {
         const onKeyDown = (e: KeyboardEvent) => {
+            if (phase === 'prestart') {
+                if (e.code === 'Escape') {
+                    e.preventDefault();
+                    router.push('/');
+                    return;
+                }
+                if (e.code === 'ArrowRight' || e.code === 'Space') {
+                    e.preventDefault();
+                    startNow();
+                    return;
+                }
+                return;
+            }
             const prev = routineWithTransitions[currentIndex - 1] ?? null;
             const prevHadPause = !!(
                 prev &&
@@ -130,6 +156,8 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
         routineWithTransitions,
         manualTransitionStarted,
         startManualTransition,
+        phase,
+        startNow,
     ]);
 
     const currentItem = routineWithTransitions[currentIndex] ?? null;
@@ -175,6 +203,8 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
     // Determine whether this is a manual transition step (Transition preceded by a pauseForNext stretch)
     const prevItem = routineWithTransitions[currentIndex - 1] ?? null;
     const isManualTransitionStep = shouldPauseTransition(prevItem, currentItem);
+    const isManualTransitionWaiting =
+        isManualTransitionStep && !manualTransitionStarted;
 
     // Reset manual transition started flag when the current index changes
     useEffect(() => {
@@ -189,34 +219,49 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
     return (
         <div className={styles.container}>
             <div className="u-top-actions">
-                <button
-                    className="u-action"
-                    type="button"
-                    onClick={() =>
-                        isManualTransitionStep && !manualTransitionStarted
-                            ? startManualTransition()
-                            : setIsPaused((p) => !p)
-                    }
-                >
-                    {isPaused ? 'Resume' : 'Pause'}
-                </button>
-                {isManualTransitionStep && !manualTransitionStarted ? (
+                {phase === 'prestart' ? (
                     <button
                         className="u-action"
                         type="button"
-                        onClick={startManualTransition}
+                        onClick={startNow}
                     >
-                        Next
+                        Start now
                     </button>
                 ) : (
                     <button
                         className="u-action"
                         type="button"
-                        onClick={handleSkip}
+                        onClick={() =>
+                            isManualTransitionStep && !manualTransitionStarted
+                                ? startManualTransition()
+                                : setIsPaused((p) => !p)
+                        }
                     >
-                        Skip
+                        {isManualTransitionWaiting
+                            ? 'Continue'
+                            : isPaused
+                            ? 'Resume'
+                            : 'Pause'}
                     </button>
                 )}
+                {phase === 'running' &&
+                    (isManualTransitionStep && !manualTransitionStarted ? (
+                        <button
+                            className="u-action"
+                            type="button"
+                            onClick={startManualTransition}
+                        >
+                            Next
+                        </button>
+                    ) : (
+                        <button
+                            className="u-action"
+                            type="button"
+                            onClick={handleSkip}
+                        >
+                            Skip
+                        </button>
+                    ))}
                 <button
                     className="u-action"
                     type="button"
@@ -225,16 +270,34 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
                     Cancel
                 </button>
             </div>
-            <Timer
-                key={currentIndex}
-                initialTime={currentInitialTime}
-                onLowTime={handleLowTime}
-                onTimerComplete={handleTimerComplete}
-                isPaused={
-                    isPaused ||
-                    (isManualTransitionStep && !manualTransitionStarted)
-                }
-            />
+            {phase === 'prestart' ? (
+                <>
+                    <p
+                        className="text-center"
+                        style={{ marginTop: '12px', opacity: 0.9 }}
+                    >
+                        First up…
+                    </p>
+                    <Timer
+                        key={`${phase}-${type}`}
+                        initialTime={PRESTART_SECONDS}
+                        onLowTime={() => {}}
+                        onTimerComplete={startNow}
+                        isPaused={false}
+                    />
+                </>
+            ) : (
+                <Timer
+                    key={`${phase}-${currentIndex}`}
+                    initialTime={currentInitialTime}
+                    onLowTime={handleLowTime}
+                    onTimerComplete={handleTimerComplete}
+                    isPaused={
+                        isPaused ||
+                        (isManualTransitionStep && !manualTransitionStarted)
+                    }
+                />
+            )}
             <div
                 style={{
                     display: 'grid',
@@ -243,7 +306,13 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
                     height: 'calc(100vh - 140px)',
                 }}
             >
-                <RoutineItem item={displayedCurrentItem} />
+                <RoutineItem
+                    item={
+                        phase === 'prestart'
+                            ? routineWithTransitions[0]
+                            : displayedCurrentItem
+                    }
+                />
                 {showNext && <RoutineItem item={nextItem} next />}
             </div>
         </div>

@@ -88,12 +88,12 @@ export const HOCKEY: Stretch[] = [
         name: 'Hip Flexor Stretch - RIGHT',
         description: 'Standing hip flexor stretch',
         image: '/images/hip-flexor.jpg',
+        pauseForNext: true,
     },
     {
         name: 'Seated piriformus stretch - RIGHT',
         description: 'Sitting in a chair with right ankle on left knee',
         image: '/images/seated-piriformis-stretch.webp',
-        pauseForNext: true,
     },
     {
         name: 'Seated piriformus stretch - LEFT',
@@ -117,6 +117,7 @@ export const HOCKEY: Stretch[] = [
         name: 'Seated butterfly stretch',
         description: 'Sitting on the floor, feet together, knees out',
         image: '/images/seated-butterfly-stretch.jpeg',
+        pauseForNext: true,
     },
     {
         name: 'Laying glutes stretch - LEFT',
