@@ -32,8 +32,8 @@ vi.mock('@/components/Timer/Timer', () => {
             isPaused?: boolean;
         }) => {
             useLayoutEffect(() => {
-                // When first stretch mounts (isPaused=false), expose a trigger
-                if (!isPaused && !setTrigger) {
+                // When an active timer mounts (isPaused=false), expose/update a trigger
+                if (!isPaused) {
                     setTrigger = onTimerComplete;
                 }
             }, [isPaused, onTimerComplete]);
@@ -49,6 +49,12 @@ describe('StretchRunner manual transition behavior', () => {
     it('shows Next during manual transition and starts countdown on Space/ArrowRight', async () => {
         render(<StretchRunner type="hockey" time={60} />);
 
+        // Exit the 10s pre-start phase
+        fireEvent.click(
+            await screen.findByRole('button', { name: /start now/i })
+        );
+        await act(async () => {});
+
         // Programmatically complete the first stretch; then flush effects
         await act(async () => {
             const mod = (await vi.importMock('@/components/Timer/Timer')) as {
@@ -63,6 +69,11 @@ describe('StretchRunner manual transition behavior', () => {
         // Expect a Next button to appear during manual transition (instead of Skip)
         expect(
             await screen.findByRole('button', { name: /next/i })
+        ).toBeInTheDocument();
+
+        // Primary button should reflect that we're paused waiting for user input
+        expect(
+            screen.getByRole('button', { name: /continue/i })
         ).toBeInTheDocument();
 
         // Space should start the 5s countdown (remove Next and resume timer)

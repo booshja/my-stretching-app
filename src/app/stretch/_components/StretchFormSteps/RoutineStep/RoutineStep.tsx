@@ -2,6 +2,7 @@
 
 import { ROUTINE_OPTIONS, type RoutineOption } from '../../../_utils';
 import { HOCKEY } from '@/utils/routines/hockeyStretch';
+import { NECK_STRETCHES } from '@/utils/routines/neckStretches';
 
 interface RoutineStepProps {
     handleRoutineChoice: (routine: RoutineOption) => void;
@@ -11,6 +12,7 @@ export const RoutineStep = ({ handleRoutineChoice }: RoutineStepProps) => {
     const counts: Record<RoutineOption, number> = {
         [ROUTINE_OPTIONS.HOCKEY]: HOCKEY.length,
         [ROUTINE_OPTIONS.DAILY]: 0,
+        [ROUTINE_OPTIONS.NECK]: NECK_STRETCHES.length,
     };
     return (
         <div>
@@ -23,6 +25,17 @@ export const RoutineStep = ({ handleRoutineChoice }: RoutineStepProps) => {
                 >
                     Hockey Pre-Game
                 </button>
+                {counts[ROUTINE_OPTIONS.NECK] > 0 && (
+                    <button
+                        className="u-button"
+                        type="button"
+                        onClick={() =>
+                            handleRoutineChoice(ROUTINE_OPTIONS.NECK)
+                        }
+                    >
+                        Neck Stretches
+                    </button>
+                )}
                 {counts[ROUTINE_OPTIONS.DAILY] > 0 && (
                     <button
                         className="u-button"

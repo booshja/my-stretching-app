@@ -7,6 +7,7 @@ import {
     type StretchTime,
 } from '../../../_utils';
 import { HOCKEY } from '@/utils/routines/hockeyStretch';
+import { NECK_STRETCHES } from '@/utils/routines/neckStretches';
 import {
     TRANSITION_SECONDS,
     formatDurationPhrase,
@@ -24,7 +25,16 @@ export const LengthStep = ({
     routineChoice,
     onBack,
 }: LengthStepProps) => {
-    const base = routineChoice === 'hockey' ? HOCKEY : [];
+    const base = (() => {
+        switch (routineChoice) {
+            case 'hockey':
+                return HOCKEY;
+            case 'neck':
+                return NECK_STRETCHES;
+            default:
+                return [];
+        }
+    })();
     const numItems = base.length;
 
     if (numItems === 0) {

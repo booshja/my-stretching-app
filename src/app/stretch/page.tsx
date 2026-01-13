@@ -23,7 +23,7 @@ function StretchContent() {
     }
 
     const allowedParams: Record<string, string[]> = {
-        type: ['hockey', 'daily'],
+        type: ['hockey', 'daily', 'neck'],
         time:
             process.env.NODE_ENV === 'development'
                 ? ['20', '60', '90']
@@ -34,7 +34,7 @@ function StretchContent() {
         const { type: parsedType, time: parsedTime } = checkUrlParams({
             allowedParams,
             params,
-        }) as { type: 'hockey' | 'daily'; time: '60' | '90' | '20' };
+        }) as { type: 'hockey' | 'daily' | 'neck'; time: '60' | '90' | '20' };
         return (
             <div className="u-page">
                 <StretchRunner

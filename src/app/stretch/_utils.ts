@@ -1,6 +1,7 @@
 export const ROUTINE_OPTIONS = {
     HOCKEY: 'hockey',
     DAILY: 'daily',
+    NECK: 'neck',
 } as const;
 
 export type RoutineOption =
@@ -9,6 +10,7 @@ export type RoutineOption =
 export const ROUTINE_STRINGS = {
     hockey: 'Hockey Pre-Game',
     daily: 'Daily Stretch',
+    neck: 'Neck Stretches',
 } as const;
 
 export const STRETCH_TIMES = {
