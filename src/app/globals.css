@@ -157,12 +157,19 @@ body {
 }
 
 .u-action {
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    background: #fff;
-    color: #000;
+    color: rgb(210, 210, 210);
+    background-color: #282c34;
+    border: 1px solid rgb(210, 210, 210);
+    padding: 0.45rem 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.u-action:hover {
+    background-color: rgb(210, 210, 210);
+    color: #282c34;
 }
 
 .u-page {
