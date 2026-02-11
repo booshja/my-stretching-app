@@ -44,6 +44,7 @@
     display: block;
     width: min(100%, 22rem);
     text-align: center;
+    cursor: pointer;
 }
 
 .link:hover {

@@ -6,8 +6,8 @@ import type { DisplayItem } from '@/types';
 describe('getRoutineList', () => {
     it('inserts transition items between each routine item', () => {
         const routine: DisplayItem[] = [
-            { name: 'Heat', time: 60 },
-            { name: 'Cold', time: 120 },
+            { kind: 'heatcold', name: 'Heat', time: 60 },
+            { kind: 'heatcold', name: 'Cold', time: 120 },
         ];
         const result = getRoutineList(routine);
         expect(result).toHaveLength(3);

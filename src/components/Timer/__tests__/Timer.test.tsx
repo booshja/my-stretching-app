@@ -29,4 +29,43 @@ describe('Timer', () => {
         expect(onLowTime).not.toHaveBeenCalled();
         expect(onComplete).toHaveBeenCalledTimes(1);
     });
+
+    it('calls onLowTime when countdown reaches 10', async () => {
+        const onLowTime = vi.fn();
+        const onComplete = vi.fn();
+        render(
+            <Timer
+                initialTime={11}
+                onLowTime={onLowTime}
+                onTimerComplete={onComplete}
+            />
+        );
+
+        await act(async () => {
+            vi.advanceTimersByTime(1000);
+        });
+
+        expect(onLowTime).toHaveBeenCalledTimes(1);
+        expect(onComplete).not.toHaveBeenCalled();
+    });
+
+    it('does not tick while paused', async () => {
+        const onLowTime = vi.fn();
+        const onComplete = vi.fn();
+        render(
+            <Timer
+                initialTime={1}
+                onLowTime={onLowTime}
+                onTimerComplete={onComplete}
+                isPaused
+            />
+        );
+
+        await act(async () => {
+            vi.advanceTimersByTime(1500);
+        });
+
+        expect(onLowTime).not.toHaveBeenCalled();
+        expect(onComplete).not.toHaveBeenCalled();
+    });
 });

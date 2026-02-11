@@ -11,6 +11,7 @@ const ROUTE_PARAMS = {
     STRETCH: 'stretch',
     PRE_GAME: 'pregame',
 } as const;
+type RouteParamType = (typeof ROUTE_PARAMS)[keyof typeof ROUTE_PARAMS];
 
 function AllDoneContent() {
     const params = useSearchParams();
@@ -23,7 +24,32 @@ function AllDoneContent() {
         ],
     };
 
-    const { type } = checkUrlParams({ allowedParams, params });
+    let type: RouteParamType | null = null;
+    try {
+        type = checkUrlParams({
+            allowedParams,
+            params,
+            requiredKeys: ['type'] as const,
+        }).type as RouteParamType;
+    } catch {
+        type = null;
+    }
+
+    if (!type) {
+        return (
+            <div className={styles.landingPage}>
+                <h1 className={`${styles.title} text-center`}>
+                    That&apos;s it! Great work!
+                </h1>
+                <p className={styles.description}>
+                    Routine complete. Return home to start another one.
+                </p>
+                <Link href="/" className={styles.link}>
+                    Go home
+                </Link>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.landingPage}>
@@ -40,7 +66,7 @@ function AllDoneContent() {
                     <p className={styles.description}>
                         Would you like to do a heat/cold therapy session now?
                     </p>
-                    <div>
+                    <div style={{ display: 'flex', gap: '12px' }}>
                         <Link href="/heatcold" className={styles.link}>
                             Yes
                         </Link>

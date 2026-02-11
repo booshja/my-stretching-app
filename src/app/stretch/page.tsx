@@ -22,19 +22,20 @@ function StretchContent() {
         );
     }
 
-    const allowedParams: Record<string, string[]> = {
-        type: ['hockey', 'daily', 'neck'],
+    const allowedParams = {
+        type: ['hockey', 'daily', 'neck', 'bareminimum', 'pregame', 'nighttime'],
         time:
             process.env.NODE_ENV === 'development'
-                ? ['20', '60', '90']
-                : ['60', '90'],
-    };
+                ? ['20', '45', '60']
+                : ['45', '60'],
+    } as const;
 
     try {
         const { type: parsedType, time: parsedTime } = checkUrlParams({
             allowedParams,
             params,
-        }) as { type: 'hockey' | 'daily' | 'neck'; time: '60' | '90' | '20' };
+            requiredKeys: ['type', 'time'] as const,
+        });
         return (
             <div className="u-page">
                 <StretchRunner

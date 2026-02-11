@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import styles from '../Nav.module.css';
+import styles from './Nav.module.css';
 
 export const Nav = () => {
     const pathname = usePathname();
@@ -10,6 +10,7 @@ export const Nav = () => {
     const links = [
         { href: '/', label: 'Home' },
         { href: '/stretch', label: 'Stretch' },
+        { href: '/pregame', label: 'Pre-Game Warmup' },
         { href: '/heatcold', label: 'Heat/Cold' },
     ];
 

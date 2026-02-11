@@ -8,6 +8,7 @@ export const getRoutineList = (routine: DisplayItem[]) => {
         routineWithTransitions.push(item);
         if (index < routine.length - 1) {
             routineWithTransitions.push({
+                kind: 'transition',
                 name: 'Transition',
                 description: `Get ready for ${routine[index + 1].name}`,
                 time: TRANSITION_SECONDS,

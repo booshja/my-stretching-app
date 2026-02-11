@@ -5,17 +5,24 @@ import { useRouter } from 'next/navigation';
 import { getRoutineList } from '@/utils/getRoutineList';
 import { HOCKEY } from '@/utils/routines/hockeyStretch';
 import { NECK_STRETCHES } from '@/utils/routines/neckStretches';
+import { BARE_MINIMUM } from '@/utils/routines/bareMinimum';
+import { PRE_GAME_WARMUP } from '@/utils/routines/preGameWarmup';
+import { NIGHTTIME } from '@/utils/routines/nighttimeStretch';
 import type { DisplayItem, StretchLength, Transition } from '@/types';
 import { shouldPauseTransition } from './shouldPauseTransition';
 import { Timer } from '@/components/Timer/Timer';
 import { RoutineItem } from '@/components/RoutineItem/RoutineItem';
-import styles from '../Stretch.module.css';
 import { enableWakeLock, disableWakeLock } from '@/utils/wakeLock';
+import { useRunnerKeyboardShortcuts } from '@/app/_components/useRunnerKeyboardShortcuts';
 
 interface StretchRunnerProps {
-    type: 'hockey' | 'daily' | 'neck';
+    type: 'hockey' | 'daily' | 'neck' | 'bareminimum' | 'pregame' | 'nighttime';
     time: StretchLength; // seconds
 }
+
+const isTransitionItem = (item: DisplayItem | null): item is Transition => {
+    return item !== null && item.kind === 'transition';
+};
 
 export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
     const router = useRouter();
@@ -26,6 +33,12 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
                 return HOCKEY;
             case 'neck':
                 return NECK_STRETCHES;
+            case 'bareminimum':
+                return BARE_MINIMUM;
+            case 'pregame':
+                return PRE_GAME_WARMUP;
+            case 'nighttime':
+                return NIGHTTIME;
             case 'daily':
             default:
                 return [];
@@ -79,8 +92,7 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
         setCurrentIndex((prev) => {
             const nextIsTransition =
                 prev + 1 < routineWithTransitions.length &&
-                (routineWithTransitions[prev + 1] as { name: string }).name ===
-                    'Transition';
+                isTransitionItem(routineWithTransitions[prev + 1] ?? null);
             const increment = nextIsTransition ? 2 : 1;
             const next = prev + increment;
             if (next < routineWithTransitions.length) return next;
@@ -101,81 +113,71 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
         setPhase('running');
     }, []);
 
-    useEffect(() => {
-        const onKeyDown = (e: KeyboardEvent) => {
-            if (phase === 'prestart') {
-                if (e.code === 'Escape') {
-                    e.preventDefault();
-                    router.push('/');
-                    return;
-                }
-                if (e.code === 'ArrowRight' || e.code === 'Space') {
-                    e.preventDefault();
-                    startNow();
-                    return;
-                }
-                return;
-            }
-            const prev = routineWithTransitions[currentIndex - 1] ?? null;
-            const prevHadPause = !!(
-                prev &&
-                'image' in prev &&
-                (prev as unknown as { pauseForNext?: boolean }).pauseForNext
-            );
-            const isManualTransitionKeyHandler =
-                isTransitionItem(
-                    routineWithTransitions[currentIndex] ?? null
-                ) &&
-                prevHadPause &&
-                !manualTransitionStarted;
-            if (
-                isManualTransitionKeyHandler &&
-                (e.code === 'ArrowRight' || e.code === 'Space')
-            ) {
-                e.preventDefault();
-                startManualTransition();
-                return;
-            }
-            if (e.code === 'Space') {
-                e.preventDefault();
-                setIsPaused((p) => !p);
-            } else if (e.code === 'Escape') {
-                e.preventDefault();
-                router.push('/');
-            } else if (e.code === 'ArrowRight') {
-                e.preventDefault();
-                handleSkip();
-            }
-        };
-        window.addEventListener('keydown', onKeyDown);
-        return () => window.removeEventListener('keydown', onKeyDown);
+    const goHome = useCallback(() => {
+        router.push('/');
+    }, [router]);
+
+    const isManualTransitionKeyStep = useMemo(() => {
+        if (phase === 'prestart') return false;
+
+        const prev = routineWithTransitions[currentIndex - 1] ?? null;
+        const prevHadPause = !!(prev && prev.kind === 'stretch' && prev.pauseForNext);
+
+        return (
+            isTransitionItem(routineWithTransitions[currentIndex] ?? null) &&
+            prevHadPause &&
+            !manualTransitionStarted
+        );
+    }, [currentIndex, manualTransitionStarted, phase, routineWithTransitions]);
+
+    const handleSpace = useCallback(() => {
+        if (phase === 'prestart') {
+            startNow();
+            return;
+        }
+
+        if (isManualTransitionKeyStep) {
+            startManualTransition();
+            return;
+        }
+
+        setIsPaused((p) => !p);
+    }, [isManualTransitionKeyStep, phase, startManualTransition, startNow]);
+
+    const handleArrowRight = useCallback(() => {
+        if (phase === 'prestart') {
+            startNow();
+            return;
+        }
+
+        if (isManualTransitionKeyStep) {
+            startManualTransition();
+            return;
+        }
+
+        handleSkip();
     }, [
-        router,
         handleSkip,
-        currentIndex,
-        routineWithTransitions,
-        manualTransitionStarted,
-        startManualTransition,
+        isManualTransitionKeyStep,
         phase,
+        startManualTransition,
         startNow,
     ]);
 
+    useRunnerKeyboardShortcuts({
+        onSpace: handleSpace,
+        onEscape: goHome,
+        onArrowRight: handleArrowRight,
+    });
+
     const currentItem = routineWithTransitions[currentIndex] ?? null;
-    // Type guard to identify Transition items
-    const isTransitionItem = (item: DisplayItem | null): item is Transition => {
-        return (
-            item !== null &&
-            'time' in item &&
-            'description' in item &&
-            item.name === 'Transition'
-        );
-    };
     // During a Transition step (no image), show the upcoming stretch's image
     const isTransitionStep = isTransitionItem(currentItem);
     const nextAfterCurrent = routineWithTransitions[currentIndex + 1] ?? null;
     const displayedCurrentItem =
-        isTransitionStep && nextAfterCurrent && 'image' in nextAfterCurrent
+        isTransitionStep && nextAfterCurrent && nextAfterCurrent.kind === 'stretch'
             ? {
+                  kind: 'stretch' as const,
                   name: currentItem.name,
                   description: currentItem.description,
                   image: nextAfterCurrent.image,
@@ -188,9 +190,7 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
         let previewIndex = currentIndex + 1;
         const candidate = routineWithTransitions[previewIndex] ?? null;
         const candidateIsTransition =
-            candidate !== null &&
-            'time' in candidate &&
-            candidate.name === 'Transition';
+            candidate !== null && candidate.kind === 'transition';
         if (candidateIsTransition) {
             previewIndex += 1;
         }
@@ -198,7 +198,7 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
     };
     const nextItem = computePreviewItem();
     const currentInitialTime =
-        currentItem && 'time' in currentItem ? currentItem.time : time;
+        currentItem && currentItem.kind !== 'stretch' ? currentItem.time : time;
 
     // Determine whether this is a manual transition step (Transition preceded by a pauseForNext stretch)
     const prevItem = routineWithTransitions[currentIndex - 1] ?? null;
@@ -217,7 +217,7 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
 
     // If current item is a Transition or HeatCold (no image), still render name/desc
     return (
-        <div className={styles.container}>
+        <div className="u-runner-container">
             <div className="u-top-actions">
                 {phase === 'prestart' ? (
                     <button
@@ -271,21 +271,13 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
                 </button>
             </div>
             {phase === 'prestart' ? (
-                <>
-                    <p
-                        className="text-center"
-                        style={{ marginTop: '12px', opacity: 0.9 }}
-                    >
-                        First up…
-                    </p>
-                    <Timer
-                        key={`${phase}-${type}`}
-                        initialTime={PRESTART_SECONDS}
-                        onLowTime={() => {}}
-                        onTimerComplete={startNow}
-                        isPaused={false}
-                    />
-                </>
+                <Timer
+                    key={`${phase}-${type}`}
+                    initialTime={PRESTART_SECONDS}
+                    onLowTime={() => {}}
+                    onTimerComplete={startNow}
+                    isPaused={false}
+                />
             ) : (
                 <Timer
                     key={`${phase}-${currentIndex}`}
@@ -299,20 +291,24 @@ export const StretchRunner = ({ type, time }: StretchRunnerProps) => {
                 />
             )}
             <div
-                style={{
-                    display: 'grid',
-                    gridTemplateColumns: showNext ? '1fr 1fr' : '1fr',
-                    gap: '16px',
-                    height: 'calc(100vh - 140px)',
-                }}
+                className={`u-runner-grid ${
+                    showNext ? 'u-runner-grid-two' : 'u-runner-grid-one'
+                }`}
             >
-                <RoutineItem
-                    item={
-                        phase === 'prestart'
-                            ? routineWithTransitions[0]
-                            : displayedCurrentItem
-                    }
-                />
+                <div>
+                    {phase === 'prestart' && (
+                        <p className="text-center u-first-up">
+                            First up…
+                        </p>
+                    )}
+                    <RoutineItem
+                        item={
+                            phase === 'prestart'
+                                ? routineWithTransitions[0]
+                                : displayedCurrentItem
+                        }
+                    />
+                </div>
                 {showNext && <RoutineItem item={nextItem} next />}
             </div>
         </div>

@@ -11,12 +11,13 @@ vi.mock('next/navigation', () => ({
 vi.mock('@/utils/routines/hockeyStretch', () => ({
     HOCKEY: [
         {
+            kind: 'stretch',
             name: 'Item A',
             description: 'A',
             image: '/a.jpg',
             pauseForNext: true,
         },
-        { name: 'Item B', description: 'B', image: '/b.jpg' },
+        { kind: 'stretch', name: 'Item B', description: 'B', image: '/b.jpg' },
     ],
 }));
 

@@ -1,7 +1,9 @@
 export const ROUTINE_OPTIONS = {
     HOCKEY: 'hockey',
-    DAILY: 'daily',
     NECK: 'neck',
+    BARE_MINIMUM: 'bareminimum',
+    PREGAME: 'pregame',
+    NIGHTTIME: 'nighttime',
 } as const;
 
 export type RoutineOption =
@@ -9,22 +11,24 @@ export type RoutineOption =
 
 export const ROUTINE_STRINGS = {
     hockey: 'Hockey Pre-Game',
-    daily: 'Daily Stretch',
     neck: 'Neck Stretches',
+    bareminimum: 'Bare Minimum',
+    pregame: 'Pre-Game Warmup',
+    nighttime: 'Nighttime Stretch',
 } as const;
 
 export const STRETCH_TIMES = {
     TWENTY_SECONDS: 20,
+    FORTY_FIVE_SECONDS: 45,
     ONE_MINUTE: 60,
-    ONE_MINUTE_THIRTY_SECONDS: 90,
 } as const;
 
 export type StretchTime = (typeof STRETCH_TIMES)[keyof typeof STRETCH_TIMES];
 
 export const STRETCH_TIME_STRINGS = {
     20: '20 seconds',
+    45: '45 seconds',
     60: '1 minute',
-    90: '1 minute 30 seconds',
 } as const;
 
 export const STRETCH_FORM_STEPS = {

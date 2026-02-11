@@ -173,6 +173,34 @@ body {
     width: 100%;
 }
 
+.u-runner-container {
+    position: relative;
+}
+
+.u-runner-grid {
+    display: grid;
+    gap: 16px;
+    height: calc(100vh - 140px);
+}
+
+.u-runner-grid-one {
+    grid-template-columns: 1fr;
+}
+
+.u-runner-grid-two {
+    grid-template-columns: 1fr 1fr;
+}
+
+.u-first-up {
+    font-size: 1.25rem;
+    margin: 0 0 8px;
+}
+
+.u-video-container {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+}
+
 /* Safe area utility for devices like iPhone Pro */
 .u-safe-area-padding {
     padding-left: env(safe-area-inset-left);

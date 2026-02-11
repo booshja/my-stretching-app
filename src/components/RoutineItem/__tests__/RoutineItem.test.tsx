@@ -7,6 +7,7 @@ describe('RoutineItem', () => {
         render(
             <RoutineItem
                 item={{
+                    kind: 'stretch',
                     name: 'Stretch',
                     description: 'desc',
                     image: '/images/standing-calf-stretch.webp',
@@ -20,14 +21,19 @@ describe('RoutineItem', () => {
     it('renders description when present on item', () => {
         render(
             <RoutineItem
-                item={{ name: 'Transition', description: 'Get ready', time: 5 }}
+                item={{
+                    kind: 'transition',
+                    name: 'Transition',
+                    description: 'Get ready',
+                    time: 5,
+                }}
             />
         );
         expect(screen.getByText(/get ready/i)).toBeInTheDocument();
     });
 
     it('does not render an image tag for non-stretch items without image', () => {
-        render(<RoutineItem item={{ name: 'Heat', time: 60 }} />);
+        render(<RoutineItem item={{ kind: 'heatcold', name: 'Heat', time: 60 }} />);
         const imgs = screen.queryAllByRole('img');
         expect(
             imgs.length === 0 ||

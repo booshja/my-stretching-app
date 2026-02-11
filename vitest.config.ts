@@ -9,5 +9,23 @@ export default defineConfig({
         setupFiles: ['./vitest.setup.ts'],
         globals: true,
         css: true,
+        coverage: {
+            provider: 'v8',
+            reporter: ['text', 'html'],
+            include: ['src/**/*.{ts,tsx}'],
+            exclude: [
+                '**/*.test.{ts,tsx}',
+                '**/__tests__/**',
+                '**/node_modules/**',
+                '**/.next/**',
+                'src/types.ts',
+            ],
+            thresholds: {
+                lines: 80,
+                functions: 80,
+                branches: 80,
+                statements: 80,
+            },
+        },
     },
 });

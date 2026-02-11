@@ -8,6 +8,9 @@ import {
 } from '../../../_utils';
 import { HOCKEY } from '@/utils/routines/hockeyStretch';
 import { NECK_STRETCHES } from '@/utils/routines/neckStretches';
+import { BARE_MINIMUM } from '@/utils/routines/bareMinimum';
+import { PRE_GAME_WARMUP } from '@/utils/routines/preGameWarmup';
+import { NIGHTTIME } from '@/utils/routines/nighttimeStretch';
 import {
     TRANSITION_SECONDS,
     formatDurationPhrase,
@@ -31,6 +34,12 @@ export const LengthStep = ({
                 return HOCKEY;
             case 'neck':
                 return NECK_STRETCHES;
+            case 'bareminimum':
+                return BARE_MINIMUM;
+            case 'pregame':
+                return PRE_GAME_WARMUP;
+            case 'nighttime':
+                return NIGHTTIME;
             default:
                 return [];
         }
@@ -61,7 +70,7 @@ export const LengthStep = ({
                 How long would you like to hold each stretch?
             </h2>
             <h3 className="text-center">{ROUTINE_STRINGS[routineChoice]}</h3>
-            <div>
+            <div className="text-center">
                 {process.env.NODE_ENV === 'development' && (
                     <button
                         className="u-button"
@@ -80,25 +89,23 @@ export const LengthStep = ({
                     className="u-button"
                     type="button"
                     onClick={() =>
-                        handleStretchTimeChoice(STRETCH_TIMES.ONE_MINUTE)
+                        handleStretchTimeChoice(
+                            STRETCH_TIMES.FORTY_FIVE_SECONDS
+                        )
                     }
-                    aria-label={`1 minute, about ${totalLabel(60)} total`}
+                    aria-label={`45 seconds, about ${totalLabel(45)} total`}
                 >
-                    1 minute ({totalLabel(60)} total)
+                    45 seconds ({totalLabel(45)} total)
                 </button>
                 <button
                     className="u-button"
                     type="button"
                     onClick={() =>
-                        handleStretchTimeChoice(
-                            STRETCH_TIMES.ONE_MINUTE_THIRTY_SECONDS
-                        )
+                        handleStretchTimeChoice(STRETCH_TIMES.ONE_MINUTE)
                     }
-                    aria-label={`1 minute 30 seconds, about ${totalLabel(
-                        90
-                    )} total`}
+                    aria-label={`1 minute, about ${totalLabel(60)} total`}
                 >
-                    1 minute 30 seconds ({totalLabel(90)} total)
+                    1 minute ({totalLabel(60)} total)
                 </button>
             </div>
         </div>

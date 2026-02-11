@@ -6,57 +6,43 @@ import Image from 'next/image';
 import { Timer } from '@/components/Timer/Timer';
 import {
     PRE_GAME_WARMUP,
+    type WarmupStretch,
     type WarmupItem,
 } from '@/utils/routines/preGameWarmup';
 import styles from '../PreGame.module.css';
 import { enableWakeLock, disableWakeLock } from '@/utils/wakeLock';
+import { useRunnerKeyboardShortcuts } from '@/app/_components/useRunnerKeyboardShortcuts';
+import { getYouTubeEmbedUrl } from '@/utils/getYouTubeEmbedUrl';
+import { useRoutineProgression } from '@/app/_components/useRoutineProgression';
 
 export const PreGameRunner = () => {
     const router = useRouter();
-    const routine: WarmupItem[] = useMemo(
-        () => PRE_GAME_WARMUP as unknown as WarmupItem[],
-        []
-    );
+    const routine = useMemo(() => PRE_GAME_WARMUP, []);
 
-    const [currentIndex, setCurrentIndex] = useState<number>(0);
-    const [isPaused, setIsPaused] = useState<boolean>(false);
-    const [showNext, setShowNext] = useState<boolean>(false);
+    const {
+        currentIndex,
+        setCurrentIndex,
+        isPaused,
+        setIsPaused,
+        showNext,
+        setShowNext,
+        reset,
+    } = useRoutineProgression({
+        totalItems: routine.length,
+        onComplete: () => router.push('/done?type=pregame'),
+    });
     const [isTransition, setIsTransition] = useState<boolean>(false);
     const [transitionTargetIndex, setTransitionTargetIndex] = useState<
         number | null
     >(null);
 
     const currentItem = routine[currentIndex] ?? null;
-    const isTimed = !!currentItem && 'time' in currentItem;
-    const currentInitialTime =
-        isTimed && currentItem ? (currentItem as { time: number }).time : 0;
+    const isWarmupStretch = (item: WarmupItem | null): item is WarmupStretch =>
+        !!item && 'time' in item;
+    const isTimed = isWarmupStretch(currentItem);
+    const currentInitialTime = isTimed ? currentItem.time : 0;
 
     const nextItem = routine[currentIndex + 1] ?? null;
-
-    const getYouTubeEmbedUrl = (link: string | null): string | null => {
-        if (!link) return null;
-        try {
-            const u = new URL(link);
-            const host = u.hostname;
-            // extract start seconds if present
-            const t = u.searchParams.get('t');
-            const startParam = t ? `?start=${parseInt(t, 10) || 0}` : '';
-
-            if (host.includes('youtu.be')) {
-                const id = u.pathname.replace('/', '');
-                if (!id) return null;
-                return `https://www.youtube.com/embed/${id}${startParam}`;
-            }
-            if (host.includes('youtube.com')) {
-                const id = u.searchParams.get('v');
-                if (!id) return null;
-                return `https://www.youtube.com/embed/${id}${startParam}`;
-            }
-            return null;
-        } catch {
-            return null;
-        }
-    };
 
     const goHome = useCallback(() => {
         router.push('/');
@@ -67,7 +53,7 @@ export const PreGameRunner = () => {
         setShowNext(false);
         setIsTransition(true);
         setTransitionTargetIndex(targetIndex);
-    }, []);
+    }, [setIsPaused, setShowNext]);
 
     const completeTransition = useCallback(() => {
         setIsTransition(false);
@@ -76,7 +62,7 @@ export const PreGameRunner = () => {
             setCurrentIndex(transitionTargetIndex);
             setTransitionTargetIndex(null);
         }
-    }, [transitionTargetIndex]);
+    }, [setCurrentIndex, setShowNext, transitionTargetIndex]);
 
     const goNext = useCallback(() => {
         setIsPaused(false);
@@ -94,35 +80,42 @@ export const PreGameRunner = () => {
         }
         // Next is an activity → no transition
         setCurrentIndex(nextIndex);
-    }, [currentIndex, routine, router, startTransitionTo]);
+    }, [
+        currentIndex,
+        routine,
+        router,
+        setCurrentIndex,
+        setIsPaused,
+        setShowNext,
+        startTransitionTo,
+    ]);
 
     useEffect(() => {
-        // Try to enable wake lock when runner mounts
         void enableWakeLock();
-        const onKeyDown = (e: KeyboardEvent) => {
-            if (e.code === 'Space') {
-                if (isTimed) {
-                    e.preventDefault();
-                    setIsPaused((p) => !p);
-                }
-            } else if (e.code === 'Escape') {
-                e.preventDefault();
-                goHome();
-            } else if (e.code === 'ArrowRight') {
-                e.preventDefault();
-                goNext();
-            }
-        };
-        window.addEventListener('keydown', onKeyDown);
+        reset();
         return () => {
-            window.removeEventListener('keydown', onKeyDown);
             void disableWakeLock();
         };
-    }, [goHome, goNext, isTimed]);
+    }, [reset]);
+
+    const handleSpace = useCallback(() => {
+        if (!isTimed) return;
+        setIsPaused((p) => !p);
+    }, [isTimed, setIsPaused]);
+
+    useRunnerKeyboardShortcuts({
+        onSpace: handleSpace,
+        onEscape: goHome,
+        onArrowRight: goNext,
+    });
 
     if (!routine.length) {
         return <p>No warmup items found.</p>;
     }
+
+    const currentVideoUrl = getYouTubeEmbedUrl(
+        currentItem && 'link' in currentItem ? currentItem.link : null
+    );
 
     return (
         <div className={styles.container}>
@@ -152,45 +145,30 @@ export const PreGameRunner = () => {
                         onTimerComplete={completeTransition}
                     />
                     {transitionTargetIndex !== null && (
-                        <div
-                            style={{
-                                display: 'grid',
-                                gridTemplateColumns: '1fr',
-                                gap: '16px',
-                                height: 'calc(100vh - 140px)',
-                            }}
-                        >
-                            <div>
-                                <h2 className={styles.title}>
-                                    Get ready for{' '}
-                                    {routine[transitionTargetIndex].name}
-                                </h2>
-                                {'image' in routine[transitionTargetIndex] &&
-                                (
-                                    routine[transitionTargetIndex] as {
-                                        image: string | null;
-                                    }
-                                ).image ? (
-                                    <Image
-                                        src={
-                                            (
-                                                routine[
-                                                    transitionTargetIndex
-                                                ] as {
-                                                    image: string;
-                                                }
-                                            ).image
-                                        }
-                                        alt={
-                                            routine[transitionTargetIndex].name
-                                        }
-                                        className={styles.image}
-                                        width={800}
-                                        height={600}
-                                    />
-                                ) : null}
-                            </div>
-                        </div>
+                        (() => {
+                            const transitionItem =
+                                routine[transitionTargetIndex] ?? null;
+                            if (!transitionItem) return null;
+
+                            return (
+                                <div className="u-runner-grid u-runner-grid-one">
+                                    <div>
+                                        <h2 className={styles.title}>
+                                            Get ready for {transitionItem.name}
+                                        </h2>
+                                        {transitionItem.image ? (
+                                            <Image
+                                                src={transitionItem.image}
+                                                alt={transitionItem.name}
+                                                className={styles.image}
+                                                width={800}
+                                                height={600}
+                                            />
+                                        ) : null}
+                                    </div>
+                                </div>
+                            );
+                        })()
                     )}
                 </>
             ) : (
@@ -206,14 +184,9 @@ export const PreGameRunner = () => {
                     ) : null}
                     {currentItem && (
                         <div
-                            style={{
-                                display: 'grid',
-                                gridTemplateColumns: showNext
-                                    ? '1fr 1fr'
-                                    : '1fr',
-                                gap: '16px',
-                                height: 'calc(100vh - 140px)',
-                            }}
+                            className={`u-runner-grid ${
+                                showNext ? 'u-runner-grid-two' : 'u-runner-grid-one'
+                            }`}
                         >
                             <div>
                                 <h2 className={styles.title}>
@@ -225,25 +198,10 @@ export const PreGameRunner = () => {
                                             {currentItem.description}
                                         </p>
                                     )}
-                                {getYouTubeEmbedUrl(
-                                    'link' in currentItem
-                                        ? currentItem.link
-                                        : null
-                                ) ? (
-                                    <div
-                                        style={{
-                                            width: '100%',
-                                            aspectRatio: '16 / 9',
-                                        }}
-                                    >
+                                {currentVideoUrl ? (
+                                    <div className="u-video-container">
                                         <iframe
-                                            src={
-                                                getYouTubeEmbedUrl(
-                                                    'link' in currentItem
-                                                        ? currentItem.link
-                                                        : null
-                                                )!
-                                            }
+                                            src={currentVideoUrl}
                                             width="100%"
                                             height="100%"
                                             style={{

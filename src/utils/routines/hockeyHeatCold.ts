@@ -5,7 +5,7 @@ const HEAT_COLD_TIMES = {
     COLD: 130,
 } as const;
 
-export const HOCKEY_HEAT_COLD: HeatCold[] = [
+const HOCKEY_HEAT_COLD_BASE = [
     {
         name: 'Heat',
         time: HEAT_COLD_TIMES.HEAT,
@@ -14,4 +14,11 @@ export const HOCKEY_HEAT_COLD: HeatCold[] = [
         name: 'Cold',
         time: HEAT_COLD_TIMES.COLD,
     },
-];
+] as const;
+
+export const HOCKEY_HEAT_COLD: HeatCold[] = HOCKEY_HEAT_COLD_BASE.map(
+    (item) => ({
+        ...item,
+        kind: 'heatcold',
+    })
+);

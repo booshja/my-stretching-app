@@ -1,23 +1,16 @@
 'use client';
 
 import { ROUTINE_OPTIONS, type RoutineOption } from '../../../_utils';
-import { HOCKEY } from '@/utils/routines/hockeyStretch';
-import { NECK_STRETCHES } from '@/utils/routines/neckStretches';
 
 interface RoutineStepProps {
     handleRoutineChoice: (routine: RoutineOption) => void;
 }
 
 export const RoutineStep = ({ handleRoutineChoice }: RoutineStepProps) => {
-    const counts: Record<RoutineOption, number> = {
-        [ROUTINE_OPTIONS.HOCKEY]: HOCKEY.length,
-        [ROUTINE_OPTIONS.DAILY]: 0,
-        [ROUTINE_OPTIONS.NECK]: NECK_STRETCHES.length,
-    };
     return (
         <div>
             <h2 className="text-center">Which routine would you like to do?</h2>
-            <div>
+            <div className="text-center">
                 <button
                     className="u-button"
                     type="button"
@@ -25,28 +18,34 @@ export const RoutineStep = ({ handleRoutineChoice }: RoutineStepProps) => {
                 >
                     Hockey Pre-Game
                 </button>
-                {counts[ROUTINE_OPTIONS.NECK] > 0 && (
-                    <button
-                        className="u-button"
-                        type="button"
-                        onClick={() =>
-                            handleRoutineChoice(ROUTINE_OPTIONS.NECK)
-                        }
-                    >
-                        Neck Stretches
-                    </button>
-                )}
-                {counts[ROUTINE_OPTIONS.DAILY] > 0 && (
-                    <button
-                        className="u-button"
-                        type="button"
-                        onClick={() =>
-                            handleRoutineChoice(ROUTINE_OPTIONS.DAILY)
-                        }
-                    >
-                        Daily Stretch
-                    </button>
-                )}
+
+                <button
+                    className="u-button"
+                    type="button"
+                    onClick={() =>
+                        handleRoutineChoice(ROUTINE_OPTIONS.NIGHTTIME)
+                    }
+                >
+                    Nighttime Stretch
+                </button>
+
+                <button
+                    className="u-button"
+                    type="button"
+                    onClick={() =>
+                        handleRoutineChoice(ROUTINE_OPTIONS.BARE_MINIMUM)
+                    }
+                >
+                    Bare Minimum (Nightly)
+                </button>
+
+                <button
+                    className="u-button"
+                    type="button"
+                    onClick={() => handleRoutineChoice(ROUTINE_OPTIONS.NECK)}
+                >
+                    Neck Stretches
+                </button>
             </div>
         </div>
     );

@@ -1,6 +1,6 @@
 import type { Stretch } from '@/types';
 
-export const NECK_STRETCHES: Stretch[] = [
+const NECK_STRETCHES_BASE = [
     {
         name: 'Horizontally to the left - LEFT',
         description: 'Neck stretch to the left',
@@ -31,4 +31,9 @@ export const NECK_STRETCHES: Stretch[] = [
         description: 'Neck stretch to the right',
         image: '/images/upward-neck-stretch.png',
     },
-];
+] as const;
+
+export const NECK_STRETCHES: Stretch[] = NECK_STRETCHES_BASE.map((item) => ({
+    ...item,
+    kind: 'stretch',
+}));

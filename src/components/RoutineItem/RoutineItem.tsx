@@ -19,7 +19,7 @@ export const RoutineItem = ({ item, next = false }: RoutineItemProps) => {
             {'description' in item && item.description && (
                 <p className={styles.description}>{item.description}</p>
             )}
-            {'image' in item ? (
+            {item.kind === 'stretch' ? (
                 <Image
                     src={item.image}
                     alt={item.name}

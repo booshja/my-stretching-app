@@ -21,15 +21,16 @@ function HeatColdContent() {
         );
     }
 
-    const allowedParams: Record<string, string[]> = {
+    const allowedParams = {
         rounds: ['1', '2', '3', '4'],
-    };
+    } as const;
 
     try {
         const { rounds: parsedRounds } = checkUrlParams({
             allowedParams,
             params,
-        }) as { rounds: '1' | '2' | '3' | '4' };
+            requiredKeys: ['rounds'] as const,
+        });
         return (
             <div className="u-page">
                 <HeatColdRunner rounds={parseInt(parsedRounds, 10)} />
