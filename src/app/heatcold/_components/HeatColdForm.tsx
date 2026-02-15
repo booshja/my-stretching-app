@@ -25,7 +25,10 @@ export const HeatColdForm = () => {
     return (
         <>
             <h1 className={styles.title}>Heat/Cold Therapy</h1>
-            <p>Heat for 1 minute followed by cold for 2 minutes</p>
+            <p>
+                Heat for 130 seconds, then cold for 70 seconds, repeated for
+                your chosen rounds and finished with 190 seconds of heat.
+            </p>
             {formStep === HEAT_COLD_FORM_STEPS.ROUNDS && (
                 <RoundsStep handleRoundsChoice={handleRoundsChoice} />
             )}

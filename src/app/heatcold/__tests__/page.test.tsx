@@ -28,8 +28,8 @@ describe('HeatColdPage', () => {
         expect(screen.getByText('HeatColdRunnerMock:2')).toBeInTheDocument();
     });
 
-    it('renders form on invalid rounds', () => {
-        useSearchParamsMock.mockReturnValue(new URLSearchParams('rounds=9'));
+    it('renders form on removed round option', () => {
+        useSearchParamsMock.mockReturnValue(new URLSearchParams('rounds=4'));
         render(<HeatColdPage />);
         expect(screen.getByText('HeatColdFormMock')).toBeInTheDocument();
     });

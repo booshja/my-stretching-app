@@ -12,4 +12,13 @@ describe('HeatColdForm', () => {
             '/heatcold?rounds=2'
         );
     });
+
+    it('shows only 1-3 rounds and explains final heat', () => {
+        render(<HeatColdForm />);
+
+        expect(screen.queryByRole('button', { name: /4 rounds/i })).toBeNull();
+        expect(
+            screen.getByText(/finished with 190 seconds of heat/i)
+        ).toBeInTheDocument();
+    });
 });

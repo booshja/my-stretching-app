@@ -22,7 +22,7 @@ function HeatColdContent() {
     }
 
     const allowedParams = {
-        rounds: ['1', '2', '3', '4'],
+        rounds: ['1', '2', '3'],
     } as const;
 
     try {
