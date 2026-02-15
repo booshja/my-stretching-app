@@ -1,17 +1,33 @@
-'use client';
-
-import { useSearchParams } from 'next/navigation';
 import { HeatColdForm } from './_components/HeatColdForm';
 import { HeatColdRunner } from './_components/HeatColdRunner';
 import { checkUrlParams } from '@/utils/checkUrlParams';
-import { Suspense } from 'react';
 // using global utility classes from globals.css
 
-function HeatColdContent() {
-    const params = useSearchParams();
-    const rounds = params.get('rounds');
+interface HeatColdPageProps {
+    searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
 
-    const showForm = !rounds;
+export default async function HeatCold({ searchParams }: HeatColdPageProps) {
+    const resolvedSearchParams = await searchParams;
+    const params = new URLSearchParams();
+
+    for (const [key, value] of Object.entries(resolvedSearchParams)) {
+        if (typeof value === 'string') {
+            params.set(key, value);
+            continue;
+        }
+
+        if (Array.isArray(value)) {
+            for (const entry of value) {
+                params.append(key, entry);
+            }
+        }
+    }
+
+    const rounds = params.get('rounds');
+    const roundsValues = params.getAll('rounds');
+
+    const showForm = !rounds || roundsValues.length !== 1;
 
     if (showForm) {
         return (
@@ -43,12 +59,4 @@ function HeatColdContent() {
             </div>
         );
     }
-}
-
-export default function HeatCold() {
-    return (
-        <Suspense fallback={<div className="u-page">Loading...</div>}>
-            <HeatColdContent />
-        </Suspense>
-    );
 }
