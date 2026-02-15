@@ -103,7 +103,7 @@ export const HeatColdRunner = ({ rounds }: HeatColdRunnerProps) => {
                 <button
                     className="u-action"
                     type="button"
-                    onClick={() => router.push('/')}
+                    onClick={goHome}
                 >
                     Cancel
                 </button>

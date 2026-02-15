@@ -14,7 +14,7 @@ import styles from './HeatColdForm.module.css';
 export const HeatColdForm = () => {
     const [rounds, setRounds] = useState<HeatColdRounds>(HEAT_COLD_ROUNDS.ONE);
     const [formStep, setFormStep] = useState<HeatColdFormStep>(
-        HEAT_COLD_FORM_STEPS.ROUNDS
+        HEAT_COLD_FORM_STEPS.ROUNDS,
     );
 
     const handleRoundsChoice = (rounds: HeatColdRounds) => {
@@ -26,8 +26,8 @@ export const HeatColdForm = () => {
         <>
             <h1 className={styles.title}>Heat/Cold Therapy</h1>
             <p>
-                Heat for 130 seconds, then cold for 70 seconds, repeated for
-                your chosen rounds and finished with 190 seconds of heat.
+                Heat for 2 minutes, then cold for 1 minute, repeated for your
+                chosen rounds and finished with 3 minutes of heat.
             </p>
             {formStep === HEAT_COLD_FORM_STEPS.ROUNDS && (
                 <RoundsStep handleRoundsChoice={handleRoundsChoice} />

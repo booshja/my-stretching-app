@@ -1,8 +1,12 @@
-import { ReadonlyURLSearchParams } from 'next/navigation';
 import { typedObjectKeys } from './typedObjectFunctions';
 
+interface SearchParamsLike {
+    keys(): IterableIterator<string>;
+    get(name: string): string | null;
+}
+
 interface CheckUrlParamsProps<TAllowed extends Record<string, readonly string[]>> {
-    params: ReadonlyURLSearchParams;
+    params: SearchParamsLike;
     allowedParams: TAllowed;
     requiredKeys?: readonly (keyof TAllowed)[];
 }
