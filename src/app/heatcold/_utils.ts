@@ -2,7 +2,6 @@ export const HEAT_COLD_ROUNDS = {
     ONE: 1,
     TWO: 2,
     THREE: 3,
-    FOUR: 4,
 } as const;
 
 export type HeatColdRounds =

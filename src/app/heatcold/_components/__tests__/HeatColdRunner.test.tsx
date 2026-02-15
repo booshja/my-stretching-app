@@ -10,16 +10,19 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('@/components/Timer/Timer', () => ({
     Timer: ({
+        initialTime,
         onLowTime,
         onTimerComplete,
         isPaused,
     }: {
+        initialTime: number;
         onLowTime: () => void;
         onTimerComplete: () => void;
         isPaused?: boolean;
     }) => (
         <div>
             <div>Paused:{String(isPaused)}</div>
+            <div>Initial:{initialTime}</div>
             <button onClick={onLowTime} type="button">
                 low time
             </button>
@@ -47,12 +50,16 @@ describe('HeatColdRunner', () => {
 
     it('shows next item and completes to done route', () => {
         render(<HeatColdRunner rounds={1} />);
+        expect(screen.getByText('Initial:130')).toBeInTheDocument();
 
         fireEvent.click(screen.getByRole('button', { name: /low time/i }));
         expect(screen.getByText(/next:/i)).toBeInTheDocument();
 
         fireEvent.click(screen.getByRole('button', { name: /complete/i }));
         fireEvent.click(screen.getByRole('button', { name: /complete/i }));
+        fireEvent.click(screen.getByRole('button', { name: /complete/i }));
+        fireEvent.click(screen.getByRole('button', { name: /complete/i }));
+        expect(screen.getByText('Initial:190')).toBeInTheDocument();
         fireEvent.click(screen.getByRole('button', { name: /complete/i }));
 
         expect(pushMock).toHaveBeenCalledWith('/done?type=heatcold');

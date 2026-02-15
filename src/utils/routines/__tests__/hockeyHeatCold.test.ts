@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { HOCKEY_HEAT_COLD } from '../hockeyHeatCold';
+import {
+    HOCKEY_HEAT_COLD,
+    HOCKEY_HEAT_COLD_FINAL_HEAT_SECONDS,
+} from '../hockeyHeatCold';
 
 describe('hockeyHeatCold routine data', () => {
     it('includes valid heat/cold timed segments', () => {
@@ -10,5 +13,13 @@ describe('hockeyHeatCold routine data', () => {
             expect(typeof item.time).toBe('number');
             expect(item.time).toBeGreaterThan(0);
         }
+    });
+
+    it('matches hockey heat/cold timing', () => {
+        expect(HOCKEY_HEAT_COLD).toEqual([
+            { kind: 'heatcold', name: 'Heat', time: 130 },
+            { kind: 'heatcold', name: 'Cold', time: 70 },
+        ]);
+        expect(HOCKEY_HEAT_COLD_FINAL_HEAT_SECONDS).toBe(190);
     });
 });
